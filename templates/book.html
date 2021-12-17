@@ -59,10 +59,11 @@
       <input id="your_name" type="hidden" name="name" value="{{book.name}}">
       <input type="submit" value="Issue">
       </form>
+    {% elif issue %}
+      <h4>You have issued this book</h4>  
     {% else %}
       <h4>Book is Unavailable</h4>
     {% endif %} 
-
     <!-- Optional JavaScript; choose one of the two! -->
 
     <!-- Option 1: Bootstrap Bundle with Popper -->

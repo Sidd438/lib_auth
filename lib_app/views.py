@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from lib_app.models import Book, Issue
+from lib_app.models import Book, Issue, Issued
 # Create your views here.
 def home(request):
     current_user = request.user
@@ -28,5 +28,10 @@ def issue(request):
         issue = Issue.objects.create(time=time,username=name, book_id=book_id, book_name=book_name)
         issue.save()
     book = Book.objects.get(id=book_id)
-    context = {'book': book}
+    issue = None
+    try:
+        issue = Issued.objects.get(username=name,book_name=book_name)
+    except:
+        pass    
+    context = {'book': book, 'issue':issue}
     return render(request,'book.html',context)

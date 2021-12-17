@@ -23,7 +23,8 @@ class Issued(models.Model):
     book_id = models.IntegerField()
     time = models.IntegerField(default=7)
     book_name = models.CharField(max_length=30)
-
+    due_date = models.DateField(null=True)
+    issue_date = models.DateField(auto_now=True)
 
 class Denied(models.Model):
     username = models.CharField(max_length=35)
