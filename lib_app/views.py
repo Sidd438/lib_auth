@@ -4,7 +4,6 @@ from lib_app.models import Book, Issue, Issued, Denied
 def home(request):
     name = request.user.username
     current_user = request.user
-    print(current_user.bits_id)
     email = current_user.email
     booksA = Book.objects.all()
     books = []
@@ -83,3 +82,6 @@ def interface(request):
         pass    
     context = {'book': book, 'issue':issue}
     return render(request,'book.html',context)
+
+def profile(request):
+    return render(request,'profile.html')
