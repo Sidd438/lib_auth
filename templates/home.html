@@ -62,8 +62,17 @@
                 </div>
             </div>
         </form>
-        {% endfor %}
+        {% endfor %}    
     </div>
+    <h2>Messages</h2>
+    <h4 class="m-4">Books Issued</h4>
+    {% for issued in issueds %}
+    <p class="m-2">You have been issued {{issued.book_name}} till {{issued.due_date}}</p>
+    {% endfor %}
+    <h4 class="m-4">Books Denied</h4>
+    {% for denied in d %}
+    <p class="m-2">Your request for {{denied.book_name}} has been denied because --> {{denied.reason}}</p>
+    {% endfor %}
 
     <!-- Optional JavaScript; choose one of the two! -->
 

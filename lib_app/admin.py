@@ -5,3 +5,4 @@ admin.site.register(Book)
 admin.site.register(Issue)
 admin.site.register(Denied)
 admin.site.register(Issued)
+''''admin.site.register(CustomUser)'''

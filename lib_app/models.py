@@ -1,4 +1,6 @@
 from django.db import models
+from django.contrib.auth.models import AbstractUser
+from django.db.models import manager
 
 
 class Book(models.Model):
@@ -31,3 +33,7 @@ class Denied(models.Model):
     book_id = models.IntegerField()
     reason = models.TextField()
     book_name = models.CharField(max_length=30)
+
+
+'''class CustomUser(AbstractUser):
+    bits_id = models.TextField(max_length=20)'''

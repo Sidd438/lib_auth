@@ -49,6 +49,9 @@ INSTALLED_APPS = [
 ]
 
 
+ACCOUNT_FORMS = {
+    'signup': 'lib_app.forms.CustomSignupForm',
+}
 
 SITE_ID = 1
 
@@ -134,3 +137,5 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+'''AUTH_USER_MODEL = 'lib_app.models.CustomUser'''

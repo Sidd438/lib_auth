@@ -3,6 +3,7 @@ from librarian.models import Librarian
 from lib_app.models import Issue, Issued, Denied, Book
 from django.contrib.auth.models import User, Group
 from django.contrib.auth import authenticate
+from datetime import datetime, timedelta
 
 
 def login(request):
@@ -24,8 +25,10 @@ def logging(request):
         time = request.POST.get('time')
         record = Issue.objects.get(username=username, book_id=book_id)
         record.delete()
-        issued = Issued.objects.create(
-            username=username, book_name=book_name, book_id=book_id, time=time)
+        dt = datetime.now()
+        td = timedelta(days=int(time))
+        my_date = dt + td
+        issued = Issued.objects.create(username=username, book_name=book_name, book_id=book_id, time=time, due_date=my_date)
         issued.save()
         book = Book.objects.get(name=book_name)
         print(book)
