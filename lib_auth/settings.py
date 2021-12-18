@@ -127,6 +127,11 @@ USE_I18N = True
 
 USE_TZ = True
 
+ACCOUNT_ADAPTER = 'lib_app.adapters.RestrictEmailAdapter'
+
+SOCIALACCOUNT_ADAPTER = 'lib_app.adapters.MyAdapter'
+
+SOCIALACCOUNT_EMAIL_REQUIRED=True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.0/howto/static-files/
