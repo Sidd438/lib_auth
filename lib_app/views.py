@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from lib_app.models import Book, Issue, Issued, Denied
+from lib_app.models import Book, Issue, Issued, Denied, Returned
 from allauth.socialaccount.models import SocialAccount
 from django.contrib.auth import logout
 from django.shortcuts import redirect
@@ -79,6 +79,8 @@ def book_profile(request):
             uid=uid, book_name=request.POST.get('return'))
         issued.delete()
         book = Book.objects.get(name=request.POST.get('return'))
+        returned = Returned.objects.create(uid=uid, book_name=book.name, username=name)
+        returned.save()
         book.available = True
         book.save(update_fields=['available'])
     if(request.POST.get('time')):
@@ -132,6 +134,7 @@ def profile(request):
     data['hostel'] = current_user.profile.hostel
     data['room_no'] = current_user.profile.room_no
     data['phone_number'] = current_user.profile.phone_number
+    data['merit'] = current_user.profile.merit
     data['issueds'] = issue
 
     return render(request, 'profile.html', data)

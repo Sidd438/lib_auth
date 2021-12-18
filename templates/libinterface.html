@@ -103,6 +103,23 @@
       </form>
     </div>
     {% endfor %}
+    <h2 class="m-4 mb-0" style="text-align: center">Book Returns</h2>
+    {% for returned in returneds %}
+      <h6 class="m-4 mb-6">{{returned.username}} has returned {{returned.book_name}}</h6>
+      <form method="post" action="">
+        {% csrf_token %}
+        <input
+          id="your_name"
+          class="m-4"
+          name="merit"
+          placeholder="Merit Points"
+        />
+        <input id="your_name" type="hidden" name="book_name" value="{{returned.book_name}}" />
+        <input id="your_name" type="hidden" name="uid" value="{{returned.uid}}" />
+        <button class="btn-primary m-2">Merit</button>
+      </form>
+    </div>
+    {% endfor %}
 
     <!-- Optional JavaScript; choose one of the two! -->
 

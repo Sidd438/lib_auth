@@ -50,7 +50,8 @@ class Profile(models.Model):
     hostel = models.CharField(max_length=20, null=True)
     room_no = models.IntegerField(null=True)
     phone_number = models.CharField(max_length=12, null=True)
-
+    merit = models.FloatField(default=100)
+    returns = models.IntegerField(default=0)
 
 @receiver(post_save, sender=User)
 def create_user_profile(sender, instance, created, **kwargs):
@@ -61,3 +62,8 @@ def create_user_profile(sender, instance, created, **kwargs):
 @receiver(post_save, sender=User)
 def save_user_profile(sender, instance, **kwargs):
     instance.profile.save()
+
+class Returned(models.Model):
+    uid = models.TextField(null=True)
+    book_name = models.CharField(max_length=30)
+    username = models.CharField(max_length=35,null=True)

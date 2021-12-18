@@ -100,6 +100,20 @@
         />
       </div>
     </div>
+    <div class="m-4 row">
+      <label for="staticEmail" class="col-sm-2 col-form-label"
+        >Merit Points</label
+      >
+      <div class="col-sm-10">
+        <input
+          type="text"
+          readonly
+          class="form-control-plaintext"
+          id="staticEmail"
+          value="{{merit}}"
+        />
+      </div>
+    </div>
     <h2 class="m-4">Borrowed Books</h2>
     {% for issued in issueds %}
     <div class="m-4 row">
