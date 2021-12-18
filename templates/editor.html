@@ -16,7 +16,7 @@
 <body>
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
         <div class="container-fluid">
-            <a class="navbar-brand" href="#">Library</a>
+            <a class="navbar-brand" href="./">Library</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
                 data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
                 aria-label="Toggle navigation">
@@ -25,39 +25,35 @@
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                     <li class="nav-item">
-                        <a class="nav-link active" aria-current="page" href="profile">Profile</a>
+                        <a class="nav-link active" aria-current="page" href="./profile">Profile</a>
                     </li>
-                </ul>
+                </ul>    
             </div>
             <a class="btn btn-outline-success" type="submit" href="/logout">Logout</a>
         </div>
 
 
     </nav>
-    <div style="display: flex;" class="m-3">
-        {% for book in books%}
-        <form method='get' action='/book'>
-            <div class="card m-3" style="width: 18rem;background-color: steelblue;">
-                <img src="..." class="card-img-top" alt="...">
-                <div class="card-body">
-                    <h5 class="card-title">{{book.name}}</h5>
-                    <input type = "hidden" name = "id" value = {{book.id}} />
-                    <input type="submit" value="See More">
-                </div>
-            </div>
-        </form>
-        {% endfor %}    
-    </div>
-    <h2>Messages</h2>
-    <h4 class="m-4">Books Issued</h4>
-    {% for issued in issueds %}
-    <p class="m-2" style="text-align: center;">You have been issued {{issued.book_name}} till {{issued.due_date}}</p>
-    {% endfor %}
-    <h4 class="m-4">Books Denied</h4>
-    {% for denied in d %}
-    <p class="m-2" style="text-align: center;">Your request for {{denied.book_name}} has been denied because --> {{denied.reason}}</p>
-    {% endfor %}
-
+    <form method="post" action=''>
+        {% csrf_token %}
+        <div class="form-group m-3">
+            <label for="exampleInputEmail1">BITS ID</label>
+            <input type="text" name='bits_id' class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
+        </div>
+        <div class="form-group m-3">
+            <label for="exampleInputEmail1">Hostel</label>
+            <input type="text" name='hostel' class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
+        </div>
+        <div class="form-group m-3">
+            <label for="exampleInputEmail1">Room Number</label>
+            <input type="text" name='room_number' class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
+        </div>
+        <div class="form-group m-3">
+            <label for="exampleInputEmail1">Phone Number</label>
+            <input type="text" name='phone_number' class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
+        </div>
+        <button type="submit" class="btn btn-primary m-5">Change</button>
+    </form>
     <!-- Optional JavaScript; choose one of the two! -->
 
     <!-- Option 1: Bootstrap Bundle with Popper -->

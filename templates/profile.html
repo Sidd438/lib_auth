@@ -25,7 +25,7 @@
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                     <li class="nav-item">
-                        <a class="nav-link active" aria-current="page" href="#">Profile</a>
+                        <a class="nav-link active" aria-current="page" href="./editor">Edit Profile</a>
                     </li>
                 </ul>    
             </div>
@@ -36,7 +36,16 @@
     </nav>
     <img class='m-4' src={{picture}}>
     <h1 class='m-4'>{{name}}</h1>
-    
+    <h2 class='m-3'>BITS ID -> {{bits_id}}</h2>
+    <h2 class='m-3'>Hostel -> {{hostel}}</h2>
+    <h2 class='m-3'>Room Number -> {{room_no}}</h2>
+    <h2 class='m-3'>Phone Number -> {{phone_number}}</h2>
+
+
+    <h1>Borrowed Books</h1>
+    {% for issued in issueds %}
+    <h3>{{issued.book_name}} &nbsp&nbsp&nbsp&nbsp&nbsp Due Date -> {{issued.due_date}}</h3>
+    {% endfor %}
     
     <!-- Optional JavaScript; choose one of the two! -->
 

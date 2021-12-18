@@ -38,11 +38,6 @@ class Denied(models.Model):
     reason = models.TextField()
     book_name = models.CharField(max_length=30)
 
-
-'''class CustomUser(AbstractUser):
-    bits_id = models.TextField(max_length=20)'''
-
-
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     bits_id = models.CharField(max_length=30, blank=True)
