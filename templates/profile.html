@@ -36,15 +36,39 @@
     </nav>
     <img class='m-4' src={{picture}}>
     <h1 class='m-4'>{{name}}</h1>
-    <h2 class='m-3'>BITS ID -> {{bits_id}}</h2>
-    <h2 class='m-3'>Hostel -> {{hostel}}</h2>
-    <h2 class='m-3'>Room Number -> {{room_no}}</h2>
-    <h2 class='m-3'>Phone Number -> {{phone_number}}</h2>
 
-
-    <h1>Borrowed Books</h1>
+    <div class="m-4 row">
+    <label for="staticEmail" class="col-sm-2 col-form-label">BITS ID </label>
+    <div class="col-sm-10">
+      <input type="text" readonly class="form-control-plaintext" id="staticEmail" value="{{bits_id}}">
+    </div>
+  </div>
+  <div class="m-4 row">
+    <label for="staticEmail" class="col-sm-2 col-form-label">Hostel</label>
+    <div class="col-sm-10">
+      <input type="text" readonly class="form-control-plaintext" id="staticEmail" value="{{hostel}}">
+    </div>
+  </div>
+  <div class="m-4 row">
+    <label for="staticEmail" class="col-sm-2 col-form-label">Room Number</label>
+    <div class="col-sm-10">
+      <input type="text" readonly class="form-control-plaintext" id="staticEmail" value="{{room_no}}">
+    </div>
+  </div>
+  <div class="m-4 row">
+    <label for="staticEmail" class="col-sm-2 col-form-label">Phone Number</label>
+    <div class="col-sm-10">
+      <input type="text" readonly class="form-control-plaintext" id="staticEmail" value="{{phone_number}}">
+    </div>
+  </div>
+    <h2 class="m-4">Borrowed Books</h2>
     {% for issued in issueds %}
-    <h3>{{issued.book_name}} &nbsp&nbsp&nbsp&nbsp&nbsp Due Date -> {{issued.due_date}}</h3>
+    <div class="m-4 row">
+    <label for="staticEmail" class="col-sm-2 col-form-label">{{issued.book_name}}</label>
+    <div class="col-sm-10">
+      <input type="text" readonly class="form-control-plaintext" id="staticEmail" value=" Due Date -> {{issued.due_date}}">
+    </div>
+  </div>
     {% endfor %}
     
     <!-- Optional JavaScript; choose one of the two! -->

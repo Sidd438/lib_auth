@@ -38,7 +38,7 @@
         {% for book in books%}
         <form method='get' action='/book'>
             <div class="card m-3" style="width: 18rem;background-color: steelblue;">
-                <img src="..." class="card-img-top" alt="...">
+                <img src="{{book.image_link}}" class="card-img-top" alt="...">
                 <div class="card-body">
                     <h5 class="card-title">{{book.name}}</h5>
                     <input type = "hidden" name = "id" value = {{book.id}} />

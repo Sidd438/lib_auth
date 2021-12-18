@@ -32,7 +32,9 @@
             <a class="btn btn-outline-success" type="submit" href="/logout">Logout</a>
         </div>
     </nav>
+    <img src="{{book.image_link}}">
     <h1>{{book.name}}</h1>
+    <h5>By {{book.author}}</h5>
     <p>{{book.summary}}</p>
     {% if book.available %}
     <form action="" method="post">

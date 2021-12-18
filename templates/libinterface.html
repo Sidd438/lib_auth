@@ -27,46 +27,27 @@
     </nav>
     <h2 class='m-4' style="text-align:center;">Issue Requests</h2>
     {% for issue in issues %}
-    <div class="m-3">
-        <h4>{{issue.username}}--{{issue.book_name}}--{{issue.time}}</h4>
+    <div class="m-3 ">
+        <h6 class="m-2 mb-6">{{issue.username}} has requested to borrow {{issue.book_name}} for {{issue.time}} day/s</h6>
         <form method="post" action="">
             {% csrf_token %}
             <input id="your_name" type="hidden" name="username" value="{{issue.username}}" />
             <input id="your_name" type="hidden" name="book_name" value="{{issue.book_name}}" />
             <input id="your_name" type="hidden" name="time" value="{{issue.time}}" />
             <input id="your_name" type="hidden" name="book_id" value="{{issue.book_id}}" />
-            <button>Accept Issue</button>
+            <button class="btn-primary m-2">Accept Issue</button>
         </form>
         <form method="post" action="">
             {% csrf_token %}
-            <input id="your_name" name="reason" placeholder="Reason for denial" />
+            <input id="your_name" class="m-2" name="reason" placeholder="Reason for denial" />
             <input id="your_name" type="hidden" name="username" value="{{issue.username}}" />
             <input id="your_name" type="hidden" name="book_name" value="{{issue.book_name}}" />
             <input id="your_name" type="hidden" name="book_id" value="{{issue.book_id}}" />
-            <button>Deny Issue</button>
+            <button class="btn-primary m-2">Deny Issue</button>
         </form>
     </div>
     {% endfor %}
-    <h2 class='m-4' style="text-align:center;">Add Book</h2>
-    <form method='post' action="">
-        {% csrf_token %}
-        <div class="mb-3">
-            <label for="exampleInputEmail1" class="form-label">Book Name</label>
-            <input type="text" name="book_name" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
-            <label for="exampleInputEmail1" class="form-label">Book Summary</label>
-            <input type="text" name="summary" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
-            <label for="exampleInputEmail1" class="form-label">Image Link</label>
-            <input type="text" name="image_link" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
-            <label for="exampleInputEmail1" class="form-label">Genre</label>
-            <input type="text" name="genre" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
-            <label for="exampleInputEmail1" class="form-label">ISBN</label>
-            <input type="text" name="isbn" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
-            <label for="exampleInputEmail1" class="form-label">Author</label>
-            <input type="text" name="author" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
-        </div>
-        <button type="submit" class="btn btn-primary">Add Book</button>
-    </form>
-
+    
     <!-- Optional JavaScript; choose one of the two! -->
 
     <!-- Option 1: Bootstrap Bundle with Popper -->

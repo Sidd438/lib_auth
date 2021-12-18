@@ -8,9 +8,9 @@ from django.contrib.auth.models import User
 
 
 class Book(models.Model):
-    image_link = models.CharField(max_length=50, null=True)
+    image_link = models.TextField(null=True)
     name = models.CharField(max_length=30)
-    summary = models.TextField(max_length=100)
+    summary = models.TextField()
     author = models.CharField(max_length=30, null=True)
     genre = models.CharField(max_length=30, null=True)
     isbn = models.IntegerField(null=True)
