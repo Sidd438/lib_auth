@@ -16,7 +16,7 @@ class RestrictEmailAdapter(DefaultAccountAdapter):
 class MyAdapter(DefaultSocialAccountAdapter):
     def pre_social_login(self, request, sociallogin):
         try:
-            user = User.objects.get(email=sociallogin.email)
+            user = User.objects.get(email=sociallogin.objects.get(user=request.user).extra_data.get('email'))
             sociallogin.connect(request, user)
             raise ImmediateHttpResponse('<h1>Wrong Domain</h1>')
         except User.DoesNotExist:

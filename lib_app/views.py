@@ -1,9 +1,25 @@
 from django.shortcuts import render
 from lib_app.models import Book, Issue, Issued, Denied
+from allauth.socialaccount.models import SocialAccount
+from django.contrib.auth import logout
+from django.shortcuts import redirect
 # Create your views here.
+
+def logoutA(request):
+    logout(request)
+    return redirect('/accounts/login')
+
+
 def home(request):
     name = request.user.username
     current_user = request.user
+    try:
+        data = SocialAccount.objects.get(user=request.user).extra_data
+        email = data.get('email')
+        if "@pilani.bits-pilani.ac.in" not in email:
+            return render(request,'error.html')
+    except:
+        print(SocialAccount.objects.get(user=request.user).extra_data)
     email = current_user.email
     booksA = Book.objects.all()
     books = []
@@ -84,4 +100,6 @@ def interface(request):
     return render(request,'book.html',context)
 
 def profile(request):
-    return render(request,'profile.html')
+    data = SocialAccount.objects.get(user=request.user).extra_data
+    context = {'data':data}
+    return render(request,'profile.html',data)

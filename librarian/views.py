@@ -4,6 +4,13 @@ from lib_app.models import Issue, Issued, Denied, Book
 from django.contrib.auth.models import User, Group
 from django.contrib.auth import authenticate
 from datetime import datetime, timedelta
+from django.contrib.auth import logout
+from django.shortcuts import redirect
+
+
+def logoutA(request):
+    logout(request)
+    return redirect('/librarian')
 
 
 def login(request):

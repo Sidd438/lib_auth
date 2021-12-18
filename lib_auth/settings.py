@@ -5,6 +5,19 @@ import os
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+SOCIALACCOUNT_PROVIDERS= {
+    "google": {
+        "SCOPE": [
+            "profile",
+            "email",
+        ],
+        "AUTH_PARAMS": {
+            "access_type": "online"
+        }
+        }
+}
+
+
 
 AUTHENTICATION_BACKENDS = [
 
@@ -12,7 +25,7 @@ AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend',
 
     # `allauth` specific authentication methods, such as login by e-mail
-    'allauth.account.auth_backends.AuthenticationBackend',
+    'allauth.account.auth_backends.AuthenticationBackend'
 ]
 
 
@@ -128,8 +141,6 @@ USE_I18N = True
 USE_TZ = True
 
 ACCOUNT_ADAPTER = 'lib_app.adapters.RestrictEmailAdapter'
-
-SOCIALACCOUNT_ADAPTER = 'lib_app.adapters.MyAdapter'
 
 SOCIALACCOUNT_EMAIL_REQUIRED=True
 
