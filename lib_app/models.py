@@ -6,7 +6,6 @@ from django.dispatch import receiver
 from django.contrib.auth.models import User
 
 
-
 class Book(models.Model):
     image_link = models.TextField(null=True)
     name = models.CharField(max_length=30)
@@ -22,9 +21,11 @@ class Issue(models.Model):
     book_id = models.IntegerField()
     time = models.IntegerField(default=7)
     book_name = models.CharField(max_length=30)
+    uid = models.TextField(null=True)
 
 
 class Issued(models.Model):
+    uid = models.TextField(null=True)
     username = models.CharField(max_length=35)
     book_id = models.IntegerField()
     time = models.IntegerField(default=7)
@@ -32,20 +33,21 @@ class Issued(models.Model):
     due_date = models.DateField(null=True)
     issue_date = models.DateField(auto_now=True)
 
+
 class Denied(models.Model):
+    uid = models.TextField(null=True)
     username = models.CharField(max_length=35)
     book_id = models.IntegerField()
     reason = models.TextField()
     book_name = models.CharField(max_length=30)
 
+
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     bits_id = models.CharField(max_length=30, blank=True)
-    hostel = models.CharField(max_length=20,null=True)
+    hostel = models.CharField(max_length=20, null=True)
     room_no = models.IntegerField(null=True)
     phone_number = models.CharField(max_length=12, null=True)
-
-
 
 
 @receiver(post_save, sender=User)

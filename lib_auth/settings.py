@@ -5,7 +5,7 @@ import os
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SOCIALACCOUNT_PROVIDERS= {
+SOCIALACCOUNT_PROVIDERS = {
     "google": {
         "SCOPE": [
             "profile",
@@ -14,9 +14,8 @@ SOCIALACCOUNT_PROVIDERS= {
         "AUTH_PARAMS": {
             "access_type": "online"
         }
-        }
+    }
 }
-
 
 
 AUTHENTICATION_BACKENDS = [
@@ -142,7 +141,7 @@ USE_TZ = True
 
 ACCOUNT_ADAPTER = 'lib_app.adapters.RestrictEmailAdapter'
 
-SOCIALACCOUNT_EMAIL_REQUIRED=True
+SOCIALACCOUNT_EMAIL_REQUIRED = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.0/howto/static-files/
