@@ -40,6 +40,17 @@
             </li>
           </ul>
         </div>
+        <form class="d-flex" method="post" action="">
+        {% csrf_token %}
+          <input
+            class="form-control me-2"
+            type="search"
+            name="search"
+            placeholder="Search"
+            aria-label="Search"
+          />
+          <button class="nav-link active m-10" style="margin-right: 5ex;" type="submit">Search</button>
+        </form>
         <a class="btn btn-outline-success" type="submit" href="/logout"
           >Logout</a
         >

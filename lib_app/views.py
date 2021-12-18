@@ -26,10 +26,23 @@ def home(request):
             return render(request, 'error.html')
     except:
         pass
+  
     booksA = Book.objects.all()
     books = []
+    books2 = []
     for book in booksA:
         books.append(book)
+    if(request.POST.get("search")):
+        search_query = request.POST.get("search")
+        for book in books:
+            if(search_query in book.name):
+                books2.append(book)
+        context = {'books':books2}
+        print(books2)
+        return render(request,'search.html',context)
+
+
+
     uid = SocialAccount.objects.get(user=current_user).uid
     try:
         issuedsA = Issued.objects.filter(uid=uid)
