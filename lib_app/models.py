@@ -14,6 +14,8 @@ class Book(models.Model):
     genre = models.CharField(max_length=30, null=True)
     isbn = models.IntegerField(null=True)
     available = models.BooleanField(default=True)
+    reviews = models.IntegerField(default=0)
+    rating = models.FloatField(default=5)
 
 
 class Issue(models.Model):

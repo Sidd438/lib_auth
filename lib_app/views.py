@@ -26,7 +26,7 @@ def home(request):
             return render(request, 'error.html')
     except:
         pass
-  
+
     booksA = Book.objects.all()
     books = []
     books2 = []
@@ -37,12 +37,9 @@ def home(request):
         for book in books:
             if(search_query in book.name):
                 books2.append(book)
-        context = {'books':books2}
+        context = {'books': books2}
         print(books2)
-        return render(request,'search.html',context)
-
-
-
+        return render(request, 'search.html', context)
     uid = SocialAccount.objects.get(user=current_user).uid
     try:
         issuedsA = Issued.objects.filter(uid=uid)
@@ -66,6 +63,17 @@ def book_profile(request):
         pass
     else:
         return render(request, 'error_reg.html')
+    if(request.POST.get('rating')):
+        book = Book.objects.get(id=request.POST.get("id"))
+        rating = request.POST.get('rating')
+        try:
+            rating = int(rating)
+            if(rating <= 5 and rating >= 0):
+                book.rating = (book.rating*book.reviews+rating)/(book.reviews+1)
+                book.reviews = 1 + book.reviews
+                book.save()
+        except:
+            pass    
     if(request.POST.get('return')):
         issued = Issued.objects.get(
             uid=uid, book_name=request.POST.get('return'))

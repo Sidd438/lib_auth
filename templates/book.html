@@ -51,6 +51,7 @@
     <img src="{{book.image_link}}" />
     <h1>{{book.name}}</h1>
     <h5>By {{book.author}}</h5>
+    <h5>Rated {{book.rating}} Stars</h5>
     <p>{{book.summary}}</p>
     {% if book.available %}
     <form action="" method="post">
@@ -77,6 +78,12 @@
     {% else %}
     <h4>Book is Unavailable</h4>
     {% endif %}
+    <form action="" method="post">
+      {% csrf_token %}
+      <input id="your_name" type="hidden" name="id" value="{{book.id}}" />
+      <input class="my-4" id="your_name" name="rating" />
+      <input type="submit" value="Rate" />
+    </form>
     <!-- Optional JavaScript; choose one of the two! -->
 
     <!-- Option 1: Bootstrap Bundle with Popper -->
