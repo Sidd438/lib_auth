@@ -165,3 +165,17 @@ def editprofile(request):
         user.profile.phone_number = request.POST.get('phone_number')
         user.save()
     return render(request, 'editor.html')
+
+def similar(request):
+    book_name = request.POST.get('book_name')
+    id = request.POST.get('id')
+    books = Book.objects.all()
+    print(book_name)
+    bookM = Book.objects.get(id=id)
+    similar_books = []
+    for book in books:
+        if(bookM.genre.lower() == book.genre.lower()):
+            similar_books.append(book)
+    context = {'books':similar_books}
+    return render(request, 'similar.html', context)         
+    

@@ -54,6 +54,12 @@
     <h5>Rated {{book.rating}} Stars</h5>
     <p>{{book.summary}}</p>
     <p>Location -> {{book.location}} </p>
+    <form action="./similar" method="post">
+      {% csrf_token %}
+      <input id="your_name" type="hidden" name="id" value="{{book.id}}" />
+      <input id="your_name" type="hidden" name="book_name" value="{{book.name}}" />
+      <input type="submit" value="Check Similar Books" />
+    </form>
     {% if book.available %}
     <form action="" method="post">
       {% csrf_token %}
