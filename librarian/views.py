@@ -1,5 +1,4 @@
 from django.shortcuts import render
-from librarian.models import Librarian
 from lib_app.models import Issue, Issued, Denied, Book, Renew, Returned
 from django.contrib.auth.models import User, Group
 from django.contrib.auth import authenticate
@@ -26,7 +25,7 @@ def logging(request):
         if(user):
             if(user.groups.filter(name="Librarians").exists()):
                 return libInterface(request)
-        return render(request, "login.html")
+        return render(request, "error.html")
     elif(request.POST.get('time')):
         username = request.POST.get('username')
         book_name = request.POST.get('book_name')
@@ -43,7 +42,6 @@ def logging(request):
             uid=uid, username=username, book_name=book_name, book_id=book_id, time=time, due_date=my_date)
             issued.save()
             book = Book.objects.get(name=book_name)
-            print(book)
             book.available = False
             book.save(update_fields=['available'])
         except:
@@ -102,14 +100,8 @@ def logging(request):
         return libInterface(request)
 
 def libInterface(request):
-    ReturnedA = Returned.objects.all()
-    returneds = []
-    for returned in ReturnedA:
-        returneds.append(returned)
-    IssueA = Issue.objects.all()
-    issues = []
-    for issue in IssueA:
-        issues.append(issue)
+    ReturnedsA = Returned.objects.all()
+    IssuesA = Issue.objects.all()
     RenewA = Renew.objects.all()
     renews = []
     for renew in RenewA:
@@ -118,5 +110,5 @@ def libInterface(request):
         renew.username = issued.username
         renew.save()
         renews.append(renew)
-    context = {'issues': issues, 'returneds':returneds, 'renews': renews}
+    context = {'issues': IssuesA, 'returneds':ReturnedsA, 'renews': renews}
     return render(request, "libinterface.html", context)

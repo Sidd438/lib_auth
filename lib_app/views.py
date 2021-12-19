@@ -56,7 +56,7 @@ def home(request):
         new_books = books[-3:]
     else:
         new_books = books
-    context = {'books': books, 'issueds': issuedsA,
+    context = {'books': booksA, 'issueds': issuedsA,
                'd': deniedsA, 'new': new_books}
     return render(request, 'home.html', context)
 
