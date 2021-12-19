@@ -71,6 +71,21 @@
       </form>
       {% endfor %}
     </div>
+    <h2>Trending Books</h2>
+    <div style="display: flex; justify-content: space-around;" class="m-3">
+      {% for book in trending %}
+      <form method="get" action="/book">
+        <div class="card m-3" style="width: 18rem; background-color: steelblue">
+          <img src="{{book.image_link}}" class="card-img-top" alt="..." />
+          <div class="card-body">
+            <h5 class="card-title">{{book.name}}</h5>
+            <input type="hidden" name="id" value="{{book.id}}" />
+            <input type="submit" value="See More" />
+          </div>
+        </div>
+      </form>
+      {% endfor %}
+    </div>
     <h2>All Books<h2>
     <div style="display:flex;justify-content: space-around;flex-wrap:wrap;" class="m-3">
       {% for book in books%}

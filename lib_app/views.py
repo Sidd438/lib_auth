@@ -39,7 +39,6 @@ def home(request):
             if(search_query in book.name.lower()):
                 books2.append(book)
         context = {'books': books2}
-        print(books2)
         return render(request, 'search.html', context)
     uid = SocialAccount.objects.get(user=current_user).uid
     try:
@@ -56,8 +55,11 @@ def home(request):
         new_books = books[-3:]
     else:
         new_books = books
+    trending = books
+    trending.sort(key=lambda x: x.issues, reverse=True)
+    trending = trending[0:3]
     context = {'books': booksA, 'issueds': issuedsA,
-               'd': deniedsA, 'new': new_books}
+               'd': deniedsA, 'new': new_books, 'trending':trending}
     return render(request, 'home.html', context)
 
 

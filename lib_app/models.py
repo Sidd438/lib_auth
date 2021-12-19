@@ -15,6 +15,7 @@ class Book(models.Model):
     reviews = models.IntegerField(default=0)
     rating = models.FloatField(default=5)
     location = models.CharField(max_length=100, default= 'ask the librarian')
+    issues = models.IntegerField(default=0)
 
 
 class Issue(models.Model):
