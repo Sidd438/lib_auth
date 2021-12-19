@@ -19,7 +19,7 @@ def home(request):
     name = request.user.username
     current_user = request.user
     try:
-        data = SocialAccount.objects.get(user=request.user).extra_data
+        data = SocialAccount.objects.get(user=current_user).extra_data
         email = data.get('email')
         if "@pilani.bits-pilani.ac.in" not in email:
             current_user.delete()
@@ -52,11 +52,12 @@ def home(request):
             deniedsA = deniedsA[0:4]
     except:
         deniedsA = []
-    if(len(books)>3):
+    if(len(books) > 3):
         new_books = books[-3:]
     else:
-        new_books = books    
-    context = {'books': books, 'issueds': issuedsA, 'd': deniedsA, 'new':new_books}
+        new_books = books
+    context = {'books': books, 'issueds': issuedsA,
+               'd': deniedsA, 'new': new_books}
     return render(request, 'home.html', context)
 
 
@@ -72,28 +73,26 @@ def book_profile(request):
         book = Book.objects.get(id=request.POST.get("id"))
         rating = request.POST.get('rating')
         try:
-            print("nope")
             rating = float(rating)
             if(rating <= 5 and rating >= 0):
                 print((book.rating*book.reviews+rating)/(book.reviews+1))
-                book.rating = (book.rating*book.reviews+rating)/(book.reviews+1)
-                print(book.rating)
+                book.rating = (book.rating*book.reviews +
+                               rating)/(book.reviews+1)
                 book.save()
-                print(book.rating)
                 buffer = str(book.rating)[0:3]
                 print(buffer)
                 book.rating = float(buffer)
                 book.reviews = 1 + book.reviews
                 book.save()
         except:
-            print("no")
-            pass    
+            pass
     elif(request.POST.get('return')):
         issued = Issued.objects.get(
             uid=uid, book_name=request.POST.get('return'))
         issued.delete()
         book = Book.objects.get(name=request.POST.get('return'))
-        returned = Returned.objects.create(uid=uid, book_name=book.name, username=name)
+        returned = Returned.objects.create(
+            uid=uid, book_name=book.name, username=name)
         returned.save()
         book.available = True
         book.save(update_fields=['available'])
@@ -131,19 +130,6 @@ def book_data(request):
     except:
         pass
     print(issue)
-    context = {'book': book, 'issue': issue}
-    return render(request, 'book.html', context)
-
-
-def interface(request):
-    name = request.user.username
-    book_id = request.POST.get('id')
-    book = Book.objects.get(id=book_id)
-    issue = None
-    try:
-        issue = Issued.objects.get(username=name, book_name=book.name)
-    except:
-        pass
     context = {'book': book, 'issue': issue}
     return render(request, 'book.html', context)
 
