@@ -6,7 +6,7 @@ from django.contrib.auth.models import User
 
 class Book(models.Model):
     image_link = models.TextField(null=True)
-    name = models.CharField(max_length=30)
+    name = models.CharField(max_length=100)
     summary = models.TextField()
     author = models.CharField(max_length=30, null=True)
     genre = models.CharField(max_length=30, null=True)
@@ -14,6 +14,7 @@ class Book(models.Model):
     available = models.BooleanField(default=True)
     reviews = models.IntegerField(default=0)
     rating = models.FloatField(default=5)
+    location = models.CharField(max_length=100, default= 'ask the librarian')
 
 
 class Issue(models.Model):

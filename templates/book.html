@@ -53,6 +53,7 @@
     <h5>By {{book.author}}</h5>
     <h5>Rated {{book.rating}} Stars</h5>
     <p>{{book.summary}}</p>
+    <p>Location -> {{book.location}} </p>
     {% if book.available %}
     <form action="" method="post">
       {% csrf_token %}
