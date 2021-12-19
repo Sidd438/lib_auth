@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from lib_app.models import Book, Issue, Issued, Denied, Returned
+from lib_app.models import Book, Issue, Issued, Denied, Renew, Returned, Review
 from allauth.socialaccount.models import SocialAccount
 from django.contrib.auth import logout
 from django.shortcuts import redirect
@@ -34,8 +34,9 @@ def home(request):
         books.append(book)
     if(request.POST.get("search")):
         search_query = request.POST.get("search")
+        search_query = search_query.lower()
         for book in books:
-            if(search_query in book.name):
+            if(search_query in book.name.lower()):
                 books2.append(book)
         context = {'books': books2}
         print(books2)
@@ -51,7 +52,11 @@ def home(request):
             deniedsA = deniedsA[0:4]
     except:
         deniedsA = []
-    context = {'books': books, 'issueds': issuedsA, 'd': deniedsA, }
+    if(len(books)>3):
+        new_books = books[-3:]
+    else:
+        new_books = books    
+    context = {'books': books, 'issueds': issuedsA, 'd': deniedsA, 'new':new_books}
     return render(request, 'home.html', context)
 
 
@@ -67,14 +72,23 @@ def book_profile(request):
         book = Book.objects.get(id=request.POST.get("id"))
         rating = request.POST.get('rating')
         try:
-            rating = int(rating)
+            print("nope")
+            rating = float(rating)
             if(rating <= 5 and rating >= 0):
+                print((book.rating*book.reviews+rating)/(book.reviews+1))
                 book.rating = (book.rating*book.reviews+rating)/(book.reviews+1)
+                print(book.rating)
+                book.save()
+                print(book.rating)
+                buffer = str(book.rating)[0:3]
+                print(buffer)
+                book.rating = float(buffer)
                 book.reviews = 1 + book.reviews
                 book.save()
         except:
+            print("no")
             pass    
-    if(request.POST.get('return')):
+    elif(request.POST.get('return')):
         issued = Issued.objects.get(
             uid=uid, book_name=request.POST.get('return'))
         issued.delete()
@@ -83,7 +97,7 @@ def book_profile(request):
         returned.save()
         book.available = True
         book.save(update_fields=['available'])
-    if(request.POST.get('time')):
+    elif(request.POST.get('time')):
         book_id = request.POST.get('id')
         uid = SocialAccount.objects.get(user=current_user).uid
         time = request.POST.get('time')
@@ -92,7 +106,17 @@ def book_profile(request):
             issue = Issue.objects.create(
                 time=time, username=name, book_id=book_id, book_name=book_name, uid=uid)
             issue.save()
-
+    elif(request.POST.get('review')):
+        book_name = request.POST.get('book_name')
+        review = request.POST.get('review')
+        rev = Review.objects.create(book_name=book_name, review=review)
+        rev.save()
+    elif(request.POST.get('renew')):
+        book_name = request.POST.get("bookname")
+        print(book_name)
+        time = int(request.POST.get('renew'))
+        ren = Renew.objects.create(book_name=book_name, time=time)
+        ren.save()
     return book_data(request)
 
 

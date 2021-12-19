@@ -11,7 +11,7 @@
     <title>Search Results</title>
   </head>
   <body>
-    <div style="display: flex" class="m-3">
+    <div style="display:flex;flex-wrap: wrap;justify-content: space-between;" class="m-3">
       {% for book in books %}
       <form method="get" action="/book">
         <div class="card m-3" style="width: 18rem; background-color: steelblue">

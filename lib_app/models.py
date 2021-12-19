@@ -67,3 +67,12 @@ class Returned(models.Model):
     uid = models.TextField(null=True)
     book_name = models.CharField(max_length=30)
     username = models.CharField(max_length=35,null=True)
+
+class Review(models.Model):
+    book_name = models.CharField(max_length=30)
+    review = models.TextField()
+
+class Renew(models.Model):
+    username = models.CharField(max_length=50, null=True)
+    book_name = models.CharField(max_length=30)
+    time = models.IntegerField()

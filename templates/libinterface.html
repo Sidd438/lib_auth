@@ -19,7 +19,7 @@
   <body>
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
       <div class="container-fluid">
-        <a class="navbar-brand" href="#">Issues</a>
+        <a class="navbar-brand" href="#">LIbrarian Interface</a>
         <button
           class="navbar-toggler"
           type="button"
@@ -117,6 +117,27 @@
         <input id="your_name" type="hidden" name="book_name" value="{{returned.book_name}}" />
         <input id="your_name" type="hidden" name="uid" value="{{returned.uid}}" />
         <button class="btn-primary m-2">Merit</button>
+      </form>
+    </div>
+    {% endfor %}
+    <h2 class="m-4 mb-0" style="text-align: center">Renewal Requests</h2>
+    {% for renew in renews %}
+      <h6 class="m-4 mb-6">{{renew.username}} wants to book {{renew.book_name}} for {{renew.time}} more days</h6>
+      <form method="post" action="">
+        {% csrf_token %}
+        <input id="your_name" type="hidden" name="book_name" value="{{renew.book_name}}" />
+        <input id="your_name" type="hidden" name="username" value="{{renew.username}}" />
+        <input id="your_name" type="hidden" name="timed" value="{{renew.time}}" />
+        <input id="your_name" type="hidden" name="accept" value="accept" />
+        <button class="btn-primary m-2">Accept</button>
+      </form>
+      <form method="post" action="">
+        {% csrf_token %}
+        <input id="your_name" type="hidden" name="book_name" value="{{renew.book_name}}" />
+        <input id="your_name" type="hidden" name="username" value="{{renew.username}}" />
+        <input id="your_name" type="hidden" name="timed" value="{{renew.time}}" />
+        <input id="your_name" type="hidden" name="decline" value="decline" />
+        <button class="btn-primary m-2">Decline</button>
       </form>
     </div>
     {% endfor %}

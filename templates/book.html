@@ -75,15 +75,28 @@
       <input id="your_name" type="hidden" name="return" value="{{book.name}}" />
       <input type="submit" value="Return" />
     </form>
-    {% else %}
-    <h4>Book is Unavailable</h4>
-    {% endif %}
     <form action="" method="post">
       {% csrf_token %}
       <input id="your_name" type="hidden" name="id" value="{{book.id}}" />
       <input class="my-4" id="your_name" name="rating" />
       <input type="submit" value="Rate" />
     </form>
+    <form action="" method="POST">
+      {% csrf_token %}
+      <input id="your_name" type="hidden" name="book_name" value="{{book.name}}" />
+      <textarea class="form-control" name="review" id="exampleFormControlTextarea1" rows="3"></textarea>
+       <input type="submit" value="Review" />
+    </form>
+    <form action="" method="post">
+      {% csrf_token %}
+      <input id="your_name" type="hidden" name="bookname" value="{{book.name}}" />
+      <input class="my-4" id="your_name" name="renew"/>
+      <input type="submit" value="Renew" />
+    </form>
+    {% else %}
+    <h4>Book is Unavailable</h4>
+    {% endif %}
+    
     <!-- Optional JavaScript; choose one of the two! -->
 
     <!-- Option 1: Bootstrap Bundle with Popper -->
