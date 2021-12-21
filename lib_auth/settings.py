@@ -153,4 +153,22 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-'''AUTH_USER_MODEL = 'lib_app.models.CustomUser'''
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+
+EMAIL_HOST = 'smtp.gmail.com'
+
+EMAIL_PORT = 857
+
+EMAIL_USE_TLS = True
+
+DEFAULT_FROM_EMAIL = 'librarymanager@gmail.com'
+SERVER_EMAIL = 'librarymanager@gmail.com'
+
+EMAIL_USE_SSL = False
+
+EMAIL_HOST_USER = 'librarymanager@gmail.com'
+
+EMAIL_HOST_PASSWORD = 'monkseed@12'
+
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_URL = '/media/'

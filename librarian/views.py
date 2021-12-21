@@ -1,11 +1,12 @@
 from django.shortcuts import render
-from lib_app.models import Issue, Issued, Denied, Book, Renew, Returned
-from django.contrib.auth.models import User, Group
+from lib_app.models import Issue, Book, Renew, Spreadsheet
+from lib_app.forms import UploadFileForm
 from django.contrib.auth import authenticate
 from datetime import datetime, timedelta
 from django.contrib.auth import logout
 from django.shortcuts import redirect
 from allauth.socialaccount.models import SocialAccount
+from django.core.mail import send_mail
 
 
 
@@ -19,6 +20,9 @@ def login(request):
 
 
 def logging(request):
+    user = request.user
+    if(user.is_anonymous):
+        return redirect('/')
     if(request.POST.get("password")):
         user = authenticate(username=request.POST.get(
             "name"), password=request.POST.get("password"))
@@ -26,89 +30,81 @@ def logging(request):
             if(user.groups.filter(name="Librarians").exists()):
                 return libInterface(request)
         return render(request, "error.html")
+    elif(request.FILES):
+        form = UploadFileForm(request.POST, request.FILES)
+        if form.is_valid():
+            handle_uploaded_file(request.FILES['file'])
     elif(request.POST.get('time')):
-        username = request.POST.get('username')
-        book_name = request.POST.get('book_name')
-        book_id = request.POST.get('book_id')
         time = request.POST.get('time')
-        uid = request.POST.get('uid')
+        issue_id = request.POST.get('issue_id')
         try:
-            record = Issue.objects.get(username=username, book_id=book_id)
-            record.delete()
+            record = Issue.objects.filter(id=issue_id).first()
+            book = record.book
             dt = datetime.now()
             td = timedelta(days=int(time))
             my_date = dt + td
-            issued = Issued.objects.create(
-            uid=uid, username=username, book_name=book_name, book_id=book_id, time=time, due_date=my_date)
-            issued.save()
-            book = Book.objects.get(name=book_name)
+            record.due_date = my_date
+            record.pending = False
+            record.issued = True
+            record.save()
+            book.issues += 1
             book.available = False
-            book.save(update_fields=['available'])
+            book.save()
+            '''send_mail("Books Issued", "You have been Issued "+book_name +
+                      " for "+time+" day/s", "", [email], fail_silently=False)'''
         except:
             pass
-        return libInterface(request)
     elif(request.POST.get('reason')):
-        uid = request.POST.get('uid')
-        username = request.POST.get('username')
-        book_name = request.POST.get('book_name')
-        book_id = request.POST.get('book_id')
-        reason = request.POST.get('reason')
+        issue_id = request.POST.get('issue_id')
+        record = Issue.objects.get(id=issue_id)
         try:
-            record = Issue.objects.get(username=username, book_id=book_id)
-            record.delete()
-            denied = Denied.objects.create(
-            uid=uid, username=username, book_name=book_name, book_id=book_id, reason=reason)
-            denied.save()
+            record.pending = False
+            record.denied = True
+            record.reason = request.POST.get('reason')
+            record.save()
         except:
+            print('pop')
             pass
-        return libInterface(request)
     elif(request.POST.get('merit')):
-        uid = request.POST.get('uid')
-        book_name = request.POST.get('book_name')
+        issue_id = request.POST.get('issue_id')
         merit = request.POST.get('merit')
         try:
-            returned = Returned.objects.get(uid=uid,book_name=book_name)
-            returned.delete()
-            usersa = SocialAccount.objects.filter(uid=uid)
-            usersa = usersa[0]
-            user = usersa.user
+            returned = Issue.objects.get(id=issue_id)
+            returned.returned = False
+            returned.active = False
+            returned.save()
+            user = returned.user
             user.profile.merit = (user.profile.merit *user.profile.returns+int(merit))/(user.profile.returns+1)
             user.profile.returns += 1
             user.save()
         except:
             pass
-        return libInterface(request)
     elif(request.POST.get('accept')):
-        book_name = request.POST.get('book_name')
         try:    
-            renew = Renew.objects.get(book_name=book_name)
-            issued = Issued.objects.get(book_name=book_name)
+            renew = Renew.objects.get(id=request.POST.get('timed'))
+            issued = renew.issue
             td = timedelta(days=int(renew.time))
             issued.due_date = issued.due_date + td
             issued.save()
             renew.delete()
         except:
             pass    
-        return libInterface(request)
     elif(request.POST.get('decline')):
-        book_name = request.POST.get('book_name')
         try:    
-            renew = Renew.objects.get(book_name=book_name)
+            renew = Renew.objects.get(id=request.POST.get('timed'))
             renew.delete()
         except:
             pass    
-        return libInterface(request)
+
+    return libInterface(request)
 
 def libInterface(request):
-    ReturnedsA = Returned.objects.all()
-    IssuesA = Issue.objects.all()
-    RenewA = Renew.objects.all()
-    renews = []
-    for renew in RenewA:
-        book_name = renew.book_name
-        issued = Issued.objects.get(book_name = book_name)
-        renew.username = issued.username
-        renew.save()
-        renews.append(renew)
-    context = {'issues': IssuesA, 'returneds':ReturnedsA, 'renews': renews}
+    ReturnedsA = Issue.objects.filter(returned=True)
+    IssuesA = Issue.objects.filter(pending=True)
+    RenewsA = Renew.objects.all()
+    form = UploadFileForm()
+    context = {'issues': IssuesA, 'returneds':ReturnedsA, 'renews': RenewsA, 'form':form}
     return render(request, "libinterface.html", context)
+
+def handle_uploaded_file(spreadsheet):
+    pass

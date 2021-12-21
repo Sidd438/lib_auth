@@ -1,7 +1,12 @@
 from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+from django.core.validators import MaxValueValidator, MinValueValidator
 from django.contrib.auth.models import User
+
+
+class Spreadsheet(models.Model):
+    file = models.FileField(upload_to='spreadsheets')
 
 
 class Book(models.Model):
@@ -12,36 +17,21 @@ class Book(models.Model):
     genre = models.CharField(max_length=30, null=True)
     isbn = models.IntegerField(null=True)
     available = models.BooleanField(default=True)
-    reviews = models.IntegerField(default=0)
-    rating = models.FloatField(default=5)
     location = models.CharField(max_length=100, default= 'ask the librarian')
     issues = models.IntegerField(default=0)
 
 
 class Issue(models.Model):
-    username = models.CharField(max_length=35)
-    book_id = models.IntegerField()
-    time = models.IntegerField(default=7)
-    book_name = models.CharField(max_length=30)
-    uid = models.TextField(null=True)
-
-
-class Issued(models.Model):
-    uid = models.TextField(null=True)
-    username = models.CharField(max_length=35)
-    book_id = models.IntegerField()
-    time = models.IntegerField(default=7)
-    book_name = models.CharField(max_length=30)
+    book = models.ForeignKey(Book, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    time = models.IntegerField()
+    pending = models.BooleanField(default=True)
+    issued = models.BooleanField(default=False)
+    denied = models.BooleanField(default=False)
+    reason = models.TextField(null=True)
+    returned = models.BooleanField(default=False)
+    active = models.BooleanField(default=True)
     due_date = models.DateField(null=True)
-    issue_date = models.DateField(auto_now=True)
-
-
-class Denied(models.Model):
-    uid = models.TextField(null=True)
-    username = models.CharField(max_length=35)
-    book_id = models.IntegerField()
-    reason = models.TextField()
-    book_name = models.CharField(max_length=30)
 
 
 class Profile(models.Model):
@@ -63,18 +53,17 @@ def save_user_profile(sender, instance, **kwargs):
     instance.profile.save()
 
 
-class Returned(models.Model):
-    uid = models.TextField(null=True)
-    book_name = models.CharField(max_length=30)
-    username = models.CharField(max_length=35,null=True)
-
-
 class Review(models.Model):
-    book_name = models.CharField(max_length=30)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    book = models.ForeignKey(Book, on_delete=models.CASCADE)
     review = models.TextField()
 
 
+class Rating(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    book = models.ForeignKey(Book, on_delete=models.CASCADE)
+    rating = models.IntegerField(default=5, validators=[MinValueValidator(0), MaxValueValidator(5)])
+
 class Renew(models.Model):
-    username = models.CharField(max_length=50, null=True)
-    book_name = models.CharField(max_length=30)
+    issue = models.ForeignKey(Issue, on_delete=models.CASCADE)
     time = models.IntegerField()

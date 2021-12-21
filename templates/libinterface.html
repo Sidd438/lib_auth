@@ -40,23 +40,11 @@
     {% for issue in issues %}
     <div class="m-3">
       <h6 class="m-2 mb-6">
-        {{issue.username}} has requested to borrow {{issue.book_name}} for
+        {{issue.user.username}} has requested to borrow {{issue.book.book_name}} for
         {{issue.time}} day/s
       </h6>
       <form method="post" action="">
         {% csrf_token %}
-        <input
-          id="your_name"
-          type="hidden"
-          name="username"
-          value="{{issue.username}}"
-        />
-        <input
-          id="your_name"
-          type="hidden"
-          name="book_name"
-          value="{{issue.book_name}}"
-        />
         <input
           id="your_name"
           type="hidden"
@@ -67,9 +55,9 @@
           id="your_name"
           type="hidden"
           name="book_id"
-          value="{{issue.book_id}}"
+          value="{{issue.book.id}}"
         />
-        <input id="your_name" type="hidden" name="uid" value="{{issue.uid}}" />
+        <input id="your_name" type="hidden" name="issue_id" value="{{issue.id}}" />
         <button class="btn-primary m-2">Accept Issue</button>
       </form>
       <form method="post" action="">
@@ -83,29 +71,16 @@
         <input
           id="your_name"
           type="hidden"
-          name="username"
-          value="{{issue.username}}"
+          name="issue_id"
+          value="{{issue.id}}"
         />
-        <input
-          id="your_name"
-          type="hidden"
-          name="book_name"
-          value="{{issue.book_name}}"
-        />
-        <input
-          id="your_name"
-          type="hidden"
-          name="book_id"
-          value="{{issue.book_id}}"
-        />
-        <input id="your_name" type="hidden" name="uid" value="{{issue.uid}}" />
         <button class="btn-primary m-2">Deny Issue</button>
       </form>
     </div>
     {% endfor %}
     <h2 class="m-4 mb-0" style="text-align: center">Book Returns</h2>
     {% for returned in returneds %}
-      <h6 class="m-4 mb-6">{{returned.username}} has returned {{returned.book_name}}</h6>
+      <h6 class="m-4 mb-6">{{returned.user.username}} has returned {{returned.book.name}}</h6>
       <form method="post" action="">
         {% csrf_token %}
         <input
@@ -114,33 +89,38 @@
           name="merit"
           placeholder="Merit Points"
         />
-        <input id="your_name" type="hidden" name="book_name" value="{{returned.book_name}}" />
-        <input id="your_name" type="hidden" name="uid" value="{{returned.uid}}" />
+        <input id="your_name" type="hidden" name="issue_id" value="{{returned.id}}" />
         <button class="btn-primary m-2">Merit</button>
       </form>
     </div>
     {% endfor %}
     <h2 class="m-4 mb-0" style="text-align: center">Renewal Requests</h2>
     {% for renew in renews %}
-      <h6 class="m-4 mb-6">{{renew.username}} wants to book {{renew.book_name}} for {{renew.time}} more days</h6>
+      <h6 class="m-4 mb-6">{{renew.issue.user.username}} wants to book {{renew.issue.book.name}} for {{renew.time}} more days</h6>
       <form method="post" action="">
         {% csrf_token %}
-        <input id="your_name" type="hidden" name="book_name" value="{{renew.book_name}}" />
-        <input id="your_name" type="hidden" name="username" value="{{renew.username}}" />
-        <input id="your_name" type="hidden" name="timed" value="{{renew.time}}" />
+        <input id="your_name" type="hidden" name="timed" value="{{renew.id}}" />
         <input id="your_name" type="hidden" name="accept" value="accept" />
         <button class="btn-primary m-2">Accept</button>
       </form>
       <form method="post" action="">
         {% csrf_token %}
-        <input id="your_name" type="hidden" name="book_name" value="{{renew.book_name}}" />
-        <input id="your_name" type="hidden" name="username" value="{{renew.username}}" />
-        <input id="your_name" type="hidden" name="timed" value="{{renew.time}}" />
+        <input id="your_name" type="hidden" name="timed" value="{{renew.id}}" />
         <input id="your_name" type="hidden" name="decline" value="decline" />
         <button class="btn-primary m-2">Decline</button>
       </form>
     </div>
     {% endfor %}
+    <form action="" method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <p>{{ form.non_field_errors }}</p>
+            <p>{{ form.file.label_tag }} {{ form.file.help_text }}</p>
+            <p>
+                {{ form.file.errors }}
+                {{ form.file }}
+            </p>
+            <p><input type="submit" value="Upload" /></p>
+    </form>
 
     <!-- Optional JavaScript; choose one of the two! -->
 

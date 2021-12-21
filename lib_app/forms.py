@@ -22,3 +22,8 @@ class CustomSignupForm(SignupForm):
         user.profile.phone_number = self.cleaned_data['phone_number']
         user.save()
         return user
+
+
+class UploadFileForm(forms.Form):
+    title = forms.CharField(max_length=50)
+    file = forms.FileField()

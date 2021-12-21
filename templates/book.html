@@ -58,7 +58,7 @@
       {% csrf_token %}
       <input id="your_name" type="hidden" name="id" value="{{book.id}}" />
       <input id="your_name" type="hidden" name="book_name" value="{{book.name}}" />
-      <input type="submit" value="Check Similar Books" />
+      <input type="submit" class='mb-3' value="Check Similar Books" />
     </form>
     {% if book.available %}
     <form action="" method="post">
@@ -90,13 +90,13 @@
     </form>
     <form action="" method="POST">
       {% csrf_token %}
-      <input id="your_name" type="hidden" name="book_name" value="{{book.name}}" />
+      <input id="your_name" type="hidden" name="book_id" value="{{book.id}}" />
       <textarea class="form-control" name="review" id="exampleFormControlTextarea1" rows="3"></textarea>
        <input type="submit" value="Review" />
     </form>
     <form action="" method="post">
       {% csrf_token %}
-      <input id="your_name" type="hidden" name="bookname" value="{{book.name}}" />
+      <input id="your_name" type="hidden" name="book_id" value="{{book.id}}" />
       <input class="my-4" id="your_name" name="renew"/>
       <input type="submit" value="Renew" />
     </form>

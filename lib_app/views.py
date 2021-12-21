@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from lib_app.models import Book, Issue, Issued, Denied, Renew, Returned, Review
+from lib_app.models import Book, Issue, Rating, Renew, Review
 from allauth.socialaccount.models import SocialAccount
 from django.contrib.auth import logout
 from django.shortcuts import redirect
@@ -16,17 +16,9 @@ def red(request):
 
 
 def home(request):
-    name = request.user.username
     current_user = request.user
-    try:
-        data = SocialAccount.objects.get(user=current_user).extra_data
-        email = data.get('email')
-        if "@pilani.bits-pilani.ac.in" not in email:
-            current_user.delete()
-            return render(request, 'error.html')
-    except:
-        pass
-
+    if(current_user.is_anonymous):
+        return redirect('/')
     booksA = Book.objects.all()
     books = []
     books2 = []
@@ -36,17 +28,16 @@ def home(request):
         search_query = request.POST.get("search")
         search_query = search_query.lower()
         for book in books:
-            if(search_query in book.name.lower()):
+            if(search_query in book.name.lower() or search_query in book.author.lower()):
                 books2.append(book)
         context = {'books': books2}
         return render(request, 'search.html', context)
-    uid = SocialAccount.objects.get(user=current_user).uid
     try:
-        issuedsA = Issued.objects.filter(uid=uid)
+        issuedsA = Issue.objects.filter(user=current_user, issued=True)
     except:
         issuedsA = []
     try:
-        deniedsA = Denied.objects.filter(uid=uid)
+        deniedsA = Issue.objects.filter(user=current_user, denied=True)
         if(len(deniedsA) > 4):
             deniedsA = deniedsA[0:4]
     except:
@@ -64,9 +55,9 @@ def home(request):
 
 
 def book_profile(request):
-    name = request.user.username
     current_user = request.user
-    uid = SocialAccount.objects.get(user=current_user).uid
+    if(current_user.is_anonymous):
+        return redirect('/')
     if(EmailAddress.objects.filter(user=request.user, verified=True).exists()):
         pass
     else:
@@ -77,59 +68,50 @@ def book_profile(request):
         try:
             rating = float(rating)
             if(rating <= 5 and rating >= 0):
-                print((book.rating*book.reviews+rating)/(book.reviews+1))
-                book.rating = (book.rating*book.reviews +
-                               rating)/(book.reviews+1)
-                book.save()
-                buffer = str(book.rating)[0:3]
-                print(buffer)
-                book.rating = float(buffer)
-                book.reviews = 1 + book.reviews
-                book.save()
+                rate = Rating.objects.create(user=current_user, book=book, rating=rating)
+                rate.save()
         except:
             pass
     elif(request.POST.get('return')):
-        issued = Issued.objects.get(
-            uid=uid, book_name=request.POST.get('return'))
-        issued.delete()
-        book = Book.objects.get(name=request.POST.get('return'))
-        returned = Returned.objects.create(
-            uid=uid, book_name=book.name, username=name)
-        returned.save()
+        book = Book.objects.get(id=request.POST.get('id'))
+        issue = Issue.objects.get(
+            user=current_user, book=book, issued=True)
+        issue.issued = False
+        issue.returned = True
+        issue.save()
         book.available = True
-        book.save(update_fields=['available'])
+        book.save()
     elif(request.POST.get('time')):
         book_id = request.POST.get('id')
-        uid = SocialAccount.objects.get(user=current_user).uid
         time = request.POST.get('time')
-        book_name = Book.objects.get(name=request.POST.get('name')).name
-        if not(Issued.objects.filter(username=name, book_name=book_name).exists() or Issue.objects.filter(username=name, book_name=book_name).exists()):
+        book = Book.objects.get(id=book_id)
+        if not(Issue.objects.filter(user=current_user, book=book, denied=False).exists()):
             issue = Issue.objects.create(
-                time=time, username=name, book_id=book_id, book_name=book_name, uid=uid)
+                time=time, user=current_user, book=book)
             issue.save()
     elif(request.POST.get('review')):
-        book_name = request.POST.get('book_name')
+        book_id = request.POST.get('book_id')
+        book = Book.objects.get(id=book_id)
         review = request.POST.get('review')
-        rev = Review.objects.create(book_name=book_name, review=review)
+        rev = Review.objects.create(book=book, user=current_user, review=review)
         rev.save()
     elif(request.POST.get('renew')):
-        book_name = request.POST.get("bookname")
-        print(book_name)
+        book =Book.objects.get(id=request.POST.get('book_id'))
+        issue = Issue.objects.get(book=book, user=current_user, issued=True)
         time = int(request.POST.get('renew'))
-        ren = Renew.objects.create(book_name=book_name, time=time)
+        ren = Renew.objects.create(issue=issue, time=time)
         ren.save()
     return book_data(request)
 
 
 def book_data(request):
-
     id2 = request.GET['id']
-    uid = SocialAccount.objects.get(user=request.user).uid
     book = Book.objects.get(id=id2)
     issue = None
     try:
-        issue = Issued.objects.get(uid=uid, book_name=book.name)
+        issue = Issue.objects.get(user=request.user, book=book, issued=True)
     except:
+        print('no')
         pass
     print(issue)
     context = {'book': book, 'issue': issue}
@@ -138,9 +120,9 @@ def book_data(request):
 
 def profile(request):
     current_user = request.user
-    issue = None
-    uid = SocialAccount.objects.get(user=current_user).uid
-    issue = Issued.objects.filter(uid=uid)
+    if(current_user.is_anonymous):
+        return redirect('/')
+    issue = Issue.objects.filter(user=current_user, issued=True)
     data = SocialAccount.objects.get(user=current_user).extra_data
     data['bits_id'] = current_user.profile.bits_id
     data['hostel'] = current_user.profile.hostel
@@ -154,6 +136,8 @@ def profile(request):
 
 def editprofile(request):
     user = request.user
+    if(user.is_anonymous):
+        return redirect('/')
     if(request.POST.get('bits_id')):
         user.profile.bits_id = request.POST.get('bits_id')
         user.save()
