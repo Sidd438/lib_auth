@@ -35,6 +35,7 @@
           >Logout</a
         >
       </div>
+
     </nav>
     <h2 class="m-4" style="text-align: center">Issue Requests</h2>
     {% for issue in issues %}
@@ -113,15 +114,15 @@
     {% endfor %}
     <form action="" method="post" enctype="multipart/form-data">
             {% csrf_token %}
-            <p>{{ form.non_field_errors }}</p>
-            <p>{{ form.file.label_tag }} {{ form.file.help_text }}</p>
-            <p>
-                {{ form.file.errors }}
-                {{ form.file }}
-            </p>
+            {{ form.as_p }}
             <p><input type="submit" value="Upload" /></p>
     </form>
-
+    <h2>Add Book</h2>
+    <form action='' method='post'>
+      {% csrf_token %}
+      {{ book_form.as_p }}
+      <p><input type="submit" value="Add Book" /></p>
+    </form>
     <!-- Optional JavaScript; choose one of the two! -->
 
     <!-- Option 1: Bootstrap Bundle with Popper -->

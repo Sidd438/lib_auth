@@ -19,6 +19,9 @@ class Book(models.Model):
     available = models.BooleanField(default=True)
     location = models.CharField(max_length=100, default= 'ask the librarian')
     issues = models.IntegerField(default=0)
+    brating = models.IntegerField(default=5)
+    bratings = models.IntegerField(default=0)
+
 
 
 class Issue(models.Model):
@@ -57,12 +60,13 @@ class Review(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     book = models.ForeignKey(Book, on_delete=models.CASCADE)
     review = models.TextField()
+    date = models.DateField(auto_now_add=True)
 
 
 class Rating(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    book = models.ForeignKey(Book, on_delete=models.CASCADE)
-    rating = models.IntegerField(default=5, validators=[MinValueValidator(0), MaxValueValidator(5)])
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
+    book = models.ForeignKey(Book, on_delete=models.CASCADE, null=True)
+    rating = models.PositiveIntegerField(default=0,validators=[MaxValueValidator(5)])
 
 class Renew(models.Model):
     issue = models.ForeignKey(Issue, on_delete=models.CASCADE)

@@ -4,7 +4,7 @@ from allauth.socialaccount.models import SocialAccount
 from django.contrib.auth import logout
 from django.shortcuts import redirect
 from allauth.account.admin import EmailAddress
-
+from .forms import RatingForm
 
 def logoutA(request):
     logout(request)
@@ -12,7 +12,7 @@ def logoutA(request):
 
 
 def red(request):
-    return redirect('/accounts/login')
+    return render(request,'main.html')
 
 
 def home(request):
@@ -62,16 +62,16 @@ def book_profile(request):
         pass
     else:
         return render(request, 'error_reg.html')
-    if(request.POST.get('rating')):
-        book = Book.objects.get(id=request.POST.get("id"))
-        rating = request.POST.get('rating')
-        try:
-            rating = float(rating)
-            if(rating <= 5 and rating >= 0):
-                rate = Rating.objects.create(user=current_user, book=book, rating=rating)
-                rate.save()
-        except:
-            pass
+    if(request.POST.get('ratingd')):
+        book = Book.objects.get(id=request.POST.get("ratingd"))
+        ratingform = RatingForm(request.POST)
+        if ratingform.is_valid:
+            ratingform.save()
+            rating = Rating.objects.latest('id')
+            rating.user = current_user
+            rating.book = book
+            rating.save()
+
     elif(request.POST.get('return')):
         book = Book.objects.get(id=request.POST.get('id'))
         issue = Issue.objects.get(
@@ -108,13 +108,14 @@ def book_data(request):
     id2 = request.GET['id']
     book = Book.objects.get(id=id2)
     issue = None
+    ratingform = RatingForm()
     try:
         issue = Issue.objects.get(user=request.user, book=book, issued=True)
     except:
         print('no')
         pass
-    print(issue)
-    context = {'book': book, 'issue': issue}
+    reviews = reversed(book.review_set.all())
+    context = {'book': book, 'issue': issue, 'reviews':reviews, 'rating_form':ratingform}
     return render(request, 'book.html', context)
 
 
@@ -122,6 +123,22 @@ def profile(request):
     current_user = request.user
     if(current_user.is_anonymous):
         return redirect('/')
+    if(request.POST.get('bits_id') or request.POST.get('hostel') or request.POST.get('room_number') or request.POST.get('phone_number')):
+        user = request.user
+        if(user.is_anonymous):
+            return redirect('/')
+        if(request.POST.get('bits_id')):
+            user.profile.bits_id = request.POST.get('bits_id')
+            user.save()
+        if(request.POST.get('hostel')):
+            user.profile.hostel = request.POST.get('hostel')
+            user.save()
+        if(request.POST.get('room_number')):
+            user.profile.room_no = request.POST.get('room_number')
+            user.save()
+        if(request.POST.get('phone_number')):
+            user.profile.phone_number = request.POST.get('phone_number')
+            user.save()
     issue = Issue.objects.filter(user=current_user, issued=True)
     data = SocialAccount.objects.get(user=current_user).extra_data
     data['bits_id'] = current_user.profile.bits_id

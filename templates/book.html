@@ -84,8 +84,8 @@
     </form>
     <form action="" method="post">
       {% csrf_token %}
-      <input id="your_name" type="hidden" name="id" value="{{book.id}}" />
-      <input class="my-4" id="your_name" name="rating" />
+      {{ rating_form }}
+      <input id="your_name" type="hidden" name="ratingd" value="{{book.id}}" />
       <input type="submit" value="Rate" />
     </form>
     <form action="" method="POST">
@@ -103,7 +103,16 @@
     {% else %}
     <h4>Book is Unavailable</h4>
     {% endif %}
-    
+    <h2>Book Reviews<h2>
+    {% for review in reviews %}
+    <div class="card m-2" style="width: 18rem;">
+    <div class="card-body">
+    <h5 class="card-title" style="font-size: 2.5ex;">{{review.user.username}}</h5>
+    <p class="card-title" style="font-size: 1ex;">{{review.review}}</p>
+    <p style="font-size: 1.2ex;">{{review.date}}</p>
+    </div>  
+    </div>
+    {% endfor %}
     <!-- Optional JavaScript; choose one of the two! -->
 
     <!-- Option 1: Bootstrap Bundle with Popper -->

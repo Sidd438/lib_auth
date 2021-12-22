@@ -6,6 +6,7 @@ urlpatterns = [
     path('book', book_profile),
     path('accounts/profile/profile', profile),
     path('accounts/profile/editor', editprofile),
+    path('accounts/signup/', red),
     path('logout', logoutA),
     path('', red),
     path('similar',similar)

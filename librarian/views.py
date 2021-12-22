@@ -5,9 +5,9 @@ from django.contrib.auth import authenticate
 from datetime import datetime, timedelta
 from django.contrib.auth import logout
 from django.shortcuts import redirect
-from allauth.socialaccount.models import SocialAccount
 from django.core.mail import send_mail
-
+from librarian.forms import BookForm
+import pandas as pd
 
 
 def logoutA(request):
@@ -21,8 +21,10 @@ def login(request):
 
 def logging(request):
     user = request.user
-    if(user.is_anonymous):
-        return redirect('/')
+    if(request.method == 'POST'):
+        form = BookForm(request.POST)
+        if(form.is_valid()):
+            form.save()
     if(request.POST.get("password")):
         user = authenticate(username=request.POST.get(
             "name"), password=request.POST.get("password"))
@@ -95,7 +97,6 @@ def logging(request):
             renew.delete()
         except:
             pass    
-
     return libInterface(request)
 
 def libInterface(request):
@@ -103,8 +104,12 @@ def libInterface(request):
     IssuesA = Issue.objects.filter(pending=True)
     RenewsA = Renew.objects.all()
     form = UploadFileForm()
-    context = {'issues': IssuesA, 'returneds':ReturnedsA, 'renews': RenewsA, 'form':form}
+    book_form = BookForm()
+    context = {'issues': IssuesA, 'returneds':ReturnedsA, 'renews': RenewsA, 'form':form, 'book_form':book_form}
     return render(request, "libinterface.html", context)
 
 def handle_uploaded_file(spreadsheet):
+    for chunk in spreadsheet.chunks():
+        print(chunk)
     pass
+

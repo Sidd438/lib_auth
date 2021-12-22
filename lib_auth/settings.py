@@ -61,9 +61,6 @@ INSTALLED_APPS = [
 ]
 
 
-ACCOUNT_FORMS = {
-    'signup': 'lib_app.forms.CustomSignupForm',
-}
 
 SITE_ID = 1
 
@@ -139,7 +136,6 @@ USE_I18N = True
 
 USE_TZ = True
 
-ACCOUNT_ADAPTER = 'lib_app.adapters.RestrictEmailAdapter'
 
 SOCIALACCOUNT_EMAIL_REQUIRED = True
 
