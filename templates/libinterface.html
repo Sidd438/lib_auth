@@ -31,6 +31,15 @@
         >
           <span class="navbar-toggler-icon"></span>
         </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+          <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+            <li class="nav-item">
+              <a class="nav-link active" aria-current="page" href="profile"
+                >Profile</a
+              >
+            </li>
+          </ul>
+        </div>
         <a class="btn btn-outline-success" type="submit" href="/logoutlib"
           >Logout</a
         >
@@ -51,12 +60,6 @@
           type="hidden"
           name="time"
           value="{{issue.time}}"
-        />
-        <input
-          id="your_name"
-          type="hidden"
-          name="book_id"
-          value="{{issue.book.id}}"
         />
         <input id="your_name" type="hidden" name="issue_id" value="{{issue.id}}" />
         <button class="btn-primary m-2">Accept Issue</button>

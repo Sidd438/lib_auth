@@ -1,13 +1,18 @@
 from django.shortcuts import render
 from lib_app.models import Issue, Book, Renew, Spreadsheet
 from lib_app.forms import UploadFileForm
-from django.contrib.auth import authenticate
+from django.contrib.auth import authenticate, login
 from datetime import datetime, timedelta
 from django.contrib.auth import logout
 from django.shortcuts import redirect
 from django.core.mail import send_mail
+import os
+from lib_auth.settings import EMAIL_HOST_PASSWORD, EMAIL_HOST_USER
 from librarian.forms import BookForm
-import pandas as pd
+import smtplib
+from django.core.files.storage import FileSystemStorage
+from openpyxl import load_workbook
+from librarian.models import Libdata
 
 
 def logoutA(request):
@@ -15,21 +20,29 @@ def logoutA(request):
     return redirect('/librarian')
 
 
-def login(request):
+def logina(request):
     return render(request, 'liblogin.html')
 
 
 def logging(request):
     user = request.user
+    print(EMAIL_HOST_USER+EMAIL_HOST_PASSWORD)
     if(request.method == 'POST'):
         form = BookForm(request.POST)
         if(form.is_valid()):
             form.save()
+            user.profile.lib_data.books_added += 1
+            user.profile.lib_data.save()
+            print('lolo')
     if(request.POST.get("password")):
         user = authenticate(username=request.POST.get(
             "name"), password=request.POST.get("password"))
         if(user):
             if(user.groups.filter(name="Librarians").exists()):
+                if not(user.profile.lib_data):
+                    lib_data = Libdata.objects.create()
+                    user.profile.lib_data = lib_data
+                login(request,user)
                 return libInterface(request)
         return render(request, "error.html")
     elif(request.FILES):
@@ -52,8 +65,16 @@ def logging(request):
             book.issues += 1
             book.available = False
             book.save()
-            '''send_mail("Books Issued", "You have been Issued "+book_name +
-                      " for "+time+" day/s", "", [email], fail_silently=False)'''
+            user.profile.lib_data.books_issued += 1
+            user.profile.lib_data.save()
+            print("sending")
+            with smtplib.SMTP('smtp.gmail.com',587) as smtp:
+                smtp.ehlo()
+                smtp.starttls()
+                smtp.ehlo()
+                smtp.login(EMAIL_HOST_USER, EMAIL_HOST_PASSWORD)
+                msg = "Subject: Books Issued\n\n You have been Issued "+ book.name + " for "+time+" day/s"
+                smtp.sendmail(EMAIL_HOST_USER,'thefrogwhoseesall@gmail.com', msg)
         except:
             pass
     elif(request.POST.get('reason')):
@@ -100,6 +121,9 @@ def logging(request):
     return libInterface(request)
 
 def libInterface(request):
+    current_user = request.user
+    if(current_user.is_anonymous):
+        return redirect('/librarian')
     ReturnedsA = Issue.objects.filter(returned=True)
     IssuesA = Issue.objects.filter(pending=True)
     RenewsA = Renew.objects.all()
@@ -109,7 +133,38 @@ def libInterface(request):
     return render(request, "libinterface.html", context)
 
 def handle_uploaded_file(spreadsheet):
-    for chunk in spreadsheet.chunks():
-        print(chunk)
-    pass
+    fs = FileSystemStorage()
+    fs.save(r'spreadsheet\bookdata.xlsx', spreadsheet)
+    workbook = load_workbook(filename=r"media\spreadsheet\bookdata.xlsx")
+    sheet = workbook.active
+    # 0name-1image_link-2summary-3author-4genre-5isbn-6location
+    for value in sheet.iter_rows(min_row=1,min_col=1,max_col=7,values_only=True):
+        if not(value[5]):
+            break
+        elif(Book.objects.filter(isbn=value[5]).exists()):
+            book = Book.objects.filter(isbn=value[5]).first()
+            if(value[0]):
+                book.name = value[0]
+            if(value[1]):
+                book.image_link = value[1]
+            if(value[2]):
+                book.summary = value[2]
+            if(value[3]):
+                book.author = value[3]
+            if(value[4]):
+                book.genre = value[4]
+            if(value[6]):
+                book.location = value[6]
+            book.save()
+        else:
+            book = Book.objects.create(name=value[0], image_link = value[1], summary=value[2], author=value[3], genre=value[4], isbn=value[5], location=value[6])
+            book.save()
+        import shutil
+        shutil.rmtree(r"media\spreadsheet")
 
+def profile(request):
+    current_user = request.user
+    if(current_user.is_anonymous):
+        return redirect('/librarian')
+    print(request.user)
+    return render(request, 'lib_profile.html',{'user':request.user})

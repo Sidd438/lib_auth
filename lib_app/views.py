@@ -68,12 +68,16 @@ def book_profile(request):
         if ratingform.is_valid:
             ratingform.save()
             rating = Rating.objects.latest('id')
+            rate = rating.rating
             rating.user = current_user
             rating.book = book
             rating.save()
-
+            book.brating = (book.brating*book.bratings + rate)/(book.bratings+1)
+            book.bratings += 1
+            book.save()
     elif(request.POST.get('return')):
         book = Book.objects.get(id=request.POST.get('id'))
+        print(book)
         issue = Issue.objects.get(
             user=current_user, book=book, issued=True)
         issue.issued = False
@@ -85,7 +89,7 @@ def book_profile(request):
         book_id = request.POST.get('id')
         time = request.POST.get('time')
         book = Book.objects.get(id=book_id)
-        if not(Issue.objects.filter(user=current_user, book=book, denied=False).exists()):
+        if not(Issue.objects.filter(user=current_user, book=book, active=True).exists()):
             issue = Issue.objects.create(
                 time=time, user=current_user, book=book)
             issue.save()

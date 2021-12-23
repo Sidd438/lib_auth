@@ -157,12 +157,12 @@ EMAIL_PORT = 857
 
 EMAIL_USE_TLS = True
 
-DEFAULT_FROM_EMAIL = 'librarymanager@gmail.com'
-SERVER_EMAIL = 'librarymanager@gmail.com'
+DEFAULT_FROM_EMAIL = 'librarymanager931@gmail.com'
+SERVER_EMAIL = 'librarymanager931@gmail.com'
 
 EMAIL_USE_SSL = False
 
-EMAIL_HOST_USER = 'librarymanager@gmail.com'
+EMAIL_HOST_USER = 'librarymanager931@gmail.com'
 
 EMAIL_HOST_PASSWORD = 'monkseed@12'
 

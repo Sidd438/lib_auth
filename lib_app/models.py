@@ -4,13 +4,16 @@ from django.dispatch import receiver
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.contrib.auth.models import User
 
+from librarian.models import Libdata
+
 
 class Spreadsheet(models.Model):
     file = models.FileField(upload_to='spreadsheets')
 
 
 class Book(models.Model):
-    image_link = models.TextField(null=True)
+    image_link = models.TextField(
+        null=True)
     name = models.CharField(max_length=100)
     summary = models.TextField()
     author = models.CharField(max_length=30, null=True)
@@ -21,7 +24,6 @@ class Book(models.Model):
     issues = models.IntegerField(default=0)
     brating = models.IntegerField(default=5)
     bratings = models.IntegerField(default=0)
-
 
 
 class Issue(models.Model):
@@ -45,6 +47,7 @@ class Profile(models.Model):
     phone_number = models.CharField(max_length=12, null=True)
     merit = models.FloatField(default=100)
     returns = models.IntegerField(default=0)
+    lib_data = models.ForeignKey(Libdata, on_delete=models.SET_NULL, null=True)
 
 @receiver(post_save, sender=User)
 def create_user_profile(sender, instance, created, **kwargs):
@@ -66,7 +69,7 @@ class Review(models.Model):
 class Rating(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
     book = models.ForeignKey(Book, on_delete=models.CASCADE, null=True)
-    rating = models.PositiveIntegerField(default=0,validators=[MaxValueValidator(5)])
+    rating = models.PositiveIntegerField(default=1, validators=[MinValueValidator(1), MaxValueValidator(5)])
 
 class Renew(models.Model):
     issue = models.ForeignKey(Issue, on_delete=models.CASCADE)

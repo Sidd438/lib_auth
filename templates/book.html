@@ -51,7 +51,7 @@
     <img src="{{book.image_link}}" />
     <h1>{{book.name}}</h1>
     <h5>By {{book.author}}</h5>
-    <h5>Rated {{book.rating}} Stars</h5>
+    <h5>Rated {{book.brating}} Stars</h5>
     <p>{{book.summary}}</p>
     <p>Location -> {{book.location}} </p>
     <form action="./similar" method="post">
@@ -70,7 +70,6 @@
         placeholder="Give time in days"
       />
       <input id="your_name" type="hidden" name="id" value="{{book.id}}" />
-      <input id="your_name" type="hidden" name="name" value="{{book.name}}" />
       <input type="submit" value="Issue" />
     </form>
     {% elif issue %}
@@ -79,12 +78,13 @@
     <form action="" method="post">
       {% csrf_token %}
       <input id="your_name" type="hidden" name="id" value="{{book.id}}" />
-      <input id="your_name" type="hidden" name="return" value="{{book.name}}" />
+      <input id="your_name" type="hidden" name="return" value="{{book.id}}" />
       <input type="submit" value="Return" />
     </form>
     <form action="" method="post">
       {% csrf_token %}
       {{ rating_form }}
+      {{ rating_form.rating.errors}}
       <input id="your_name" type="hidden" name="ratingd" value="{{book.id}}" />
       <input type="submit" value="Rate" />
     </form>
