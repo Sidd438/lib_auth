@@ -48,17 +48,17 @@
         >
       </div>
     </nav>
-    <img src="{{book.image_link}}" />
-    <h1>{{book.name}}</h1>
-    <h5>By {{book.author}}</h5>
-    <h5>Rated {{book.brating}} Stars</h5>
-    <p>{{book.summary}}</p>
-    <p>Location -> {{book.location}} </p>
+    <img class='m-3' src="{{book.image_link}}" />
+    <h1 class='m-3'>{{book.name}}</h1>
+    <h5 class='m-3'>By {{book.author}}</h5>
+    <h5 class='m-3'>Rated {{book.brating}} Stars</h5>
+    <p class='m-3'>{{book.summary}}</p>
+    <p class='m-3'>Location -> {{book.location}} </p>
     <form action="./similar" method="post">
       {% csrf_token %}
       <input id="your_name" type="hidden" name="id" value="{{book.id}}" />
       <input id="your_name" type="hidden" name="book_name" value="{{book.name}}" />
-      <input type="submit" class='mb-3' value="Check Similar Books" />
+      <input class='m-3' type="submit" class='mb-3' value="Check Similar Books" />
     </form>
     {% if book.available %}
     <form action="" method="post">
@@ -67,10 +67,11 @@
         id="your_name"
         type="text"
         name="time"
+        class='m-3 mb-0'
         placeholder="Give time in days"
       />
       <input id="your_name" type="hidden" name="id" value="{{book.id}}" />
-      <input type="submit" value="Issue" />
+      <input  class='m-3 mt-0' type="submit" value="Issue" />
     </form>
     {% elif issue %}
     <h4>You have issued this book</h4>
@@ -79,14 +80,15 @@
       {% csrf_token %}
       <input id="your_name" type="hidden" name="id" value="{{book.id}}" />
       <input id="your_name" type="hidden" name="return" value="{{book.id}}" />
-      <input type="submit" value="Return" />
+      <input class='m-3' type="submit" value="Return" />
     </form>
     <form action="" method="post">
       {% csrf_token %}
       {{ rating_form }}
+      <p>{{ rating_form.non_field_errors }}</p>
       {{ rating_form.rating.errors}}
       <input id="your_name" type="hidden" name="ratingd" value="{{book.id}}" />
-      <input type="submit" value="Rate" />
+      <input class='m-3' type="submit" value="Rate" />
     </form>
     <form action="" method="POST">
       {% csrf_token %}
@@ -97,13 +99,13 @@
     <form action="" method="post">
       {% csrf_token %}
       <input id="your_name" type="hidden" name="book_id" value="{{book.id}}" />
-      <input class="my-4" id="your_name" name="renew"/>
-      <input type="submit" value="Renew" />
+      <input class='m-3 mb-0' class="my-4" id="your_name" name="renew"/>
+      <input class='m-3 mt-0' type="submit" value="Renew" />
     </form>
     {% else %}
-    <h4>Book is Unavailable</h4>
+    <h4 class='m-3'>Book is Unavailable</h4>
     {% endif %}
-    <h2>Book Reviews<h2>
+    <h2 class='m-3'>Book Reviews<h2>
     {% for review in reviews %}
     <div class="card m-2" style="width: 18rem;">
     <div class="card-body">

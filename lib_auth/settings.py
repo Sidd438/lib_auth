@@ -57,7 +57,8 @@ INSTALLED_APPS = [
     'allauth.socialaccount.providers.google',
 
     'lib_app.apps.LibAppConfig',
-    'librarian.apps.LibrarianConfig'
+    'librarian.apps.LibrarianConfig',
+    'admina.apps.AdminaConfig'
 ]
 
 

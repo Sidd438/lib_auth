@@ -1,18 +1,16 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from lib_app.models import Issue, Book, Renew, Spreadsheet
 from lib_app.forms import UploadFileForm
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login, logout
 from datetime import datetime, timedelta
-from django.contrib.auth import logout
-from django.shortcuts import redirect
 from django.core.mail import send_mail
-import os
 from lib_auth.settings import EMAIL_HOST_PASSWORD, EMAIL_HOST_USER
 from librarian.forms import BookForm
 import smtplib
 from django.core.files.storage import FileSystemStorage
 from openpyxl import load_workbook
 from librarian.models import Libdata
+from django.contrib import messages
 
 
 def logoutA(request):
@@ -33,7 +31,6 @@ def logging(request):
             form.save()
             user.profile.lib_data.books_added += 1
             user.profile.lib_data.save()
-            print('lolo')
     if(request.POST.get("password")):
         user = authenticate(username=request.POST.get(
             "name"), password=request.POST.get("password"))
@@ -48,7 +45,7 @@ def logging(request):
     elif(request.FILES):
         form = UploadFileForm(request.POST, request.FILES)
         if form.is_valid():
-            handle_uploaded_file(request.FILES['file'])
+            handle_uploaded_file(request.user,request.FILES['file'])
     elif(request.POST.get('time')):
         time = request.POST.get('time')
         issue_id = request.POST.get('issue_id')
@@ -122,6 +119,7 @@ def logging(request):
 
 def libInterface(request):
     current_user = request.user
+    messages.info(request, 'Your password has been changed successfully!')
     if(current_user.is_anonymous):
         return redirect('/librarian')
     ReturnedsA = Issue.objects.filter(returned=True)
@@ -129,10 +127,11 @@ def libInterface(request):
     RenewsA = Renew.objects.all()
     form = UploadFileForm()
     book_form = BookForm()
-    context = {'issues': IssuesA, 'returneds':ReturnedsA, 'renews': RenewsA, 'form':form, 'book_form':book_form}
+    books = Book.objects.all()
+    context = {'books':books,'issues': IssuesA, 'returneds':ReturnedsA, 'renews': RenewsA, 'form':form, 'book_form':book_form}
     return render(request, "libinterface.html", context)
 
-def handle_uploaded_file(spreadsheet):
+def handle_uploaded_file(user,spreadsheet):
     fs = FileSystemStorage()
     fs.save(r'spreadsheet\bookdata.xlsx', spreadsheet)
     workbook = load_workbook(filename=r"media\spreadsheet\bookdata.xlsx")
@@ -159,6 +158,8 @@ def handle_uploaded_file(spreadsheet):
         else:
             book = Book.objects.create(name=value[0], image_link = value[1], summary=value[2], author=value[3], genre=value[4], isbn=value[5], location=value[6])
             book.save()
+            user.profile.lib_data.books_added +=1
+            user.profile.lib_data.save()
         import shutil
         shutil.rmtree(r"media\spreadsheet")
 
@@ -166,5 +167,4 @@ def profile(request):
     current_user = request.user
     if(current_user.is_anonymous):
         return redirect('/librarian')
-    print(request.user)
     return render(request, 'lib_profile.html',{'user':request.user})

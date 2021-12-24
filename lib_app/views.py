@@ -5,6 +5,8 @@ from django.contrib.auth import logout
 from django.shortcuts import redirect
 from allauth.account.admin import EmailAddress
 from .forms import RatingForm
+from django.contrib.auth import get_user_model
+
 
 def logoutA(request):
     logout(request)

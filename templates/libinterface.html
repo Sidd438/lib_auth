@@ -117,15 +117,31 @@
     {% endfor %}
     <form action="" method="post" enctype="multipart/form-data">
             {% csrf_token %}
-            {{ form.as_p }}
+            <p>{{ form.non_field_errors }}</p>
+            <p>{{ form.file.label_tag }} {{ form.file.help_text }}</p>
+            <p>
+              {{ form.file.errors }}
+              {{ form.file }}
+            </p>
             <p><input type="submit" value="Upload" /></p>
     </form>
-    <h2>Add Book</h2>
+    <h2 class='m-3' style='text-align:center'>Add Book</h2>
     <form action='' method='post'>
       {% csrf_token %}
       {{ book_form.as_p }}
-      <p><input type="submit" value="Add Book" /></p>
+      <p><input type="submit" value="Add Books" /></p>
     </form>
+
+    
+    <h2 class='m-3' style="text-align: center;">All Book</h2>
+    {% for book in books %}
+        <div class="card m-3" style="width: 18rem; background-color: steelblue">
+          <img src="{{book.image_link}}" class="card-img-top" alt="..." />
+          <div class="card-body">
+            <h5 class="card-title">{{book.name}}</h5>
+          </div>
+        </div>
+      {% endfor %}
     <!-- Optional JavaScript; choose one of the two! -->
 
     <!-- Option 1: Bootstrap Bundle with Popper -->
