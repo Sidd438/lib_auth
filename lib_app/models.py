@@ -22,7 +22,7 @@ class Book(models.Model):
     available = models.BooleanField(default=True)
     location = models.CharField(max_length=100, default= 'ask the librarian')
     issues = models.IntegerField(default=0)
-    brating = models.IntegerField(default=5)
+    brating = models.FloatField(default=5)
     bratings = models.IntegerField(default=0)
 
 

@@ -74,7 +74,7 @@ def book_profile(request):
             rating.user = current_user
             rating.book = book
             rating.save()
-            book.brating = (book.brating*book.bratings + rate)/(book.bratings+1)
+            book.brating = round((book.brating*book.bratings + rate)/(book.bratings+1),2)
             book.bratings += 1
             book.save()
     elif(request.POST.get('return')):
