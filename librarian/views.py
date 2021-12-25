@@ -67,7 +67,7 @@ def logging(request):
             book.save()
             user.profile.lib_data.books_issued += 1
             user.profile.lib_data.save()
-            msg = "Subject: Books Issued\n\n You have been Issued " + book.name + " for "+time+" day/s"
+            msg = "Subject: Book Issued\n\n You have been Issued " + book.name + " for "+time+" day/s"
             email = SocialAccount.objects.filter(user=record.user).first().extra_data['email']
             with smtplib.SMTP('smtp.gmail.com',587) as smtp:
                 smtp.ehlo()
@@ -86,7 +86,7 @@ def logging(request):
             record.denied = True
             record.reason = request.POST.get('reason')
             record.save()
-            msg = "Subject: Books Denied\n\n Your request for " + \
+            msg = "Subject: Book Denied\n\n Your request for " + \
                 book.name + " has been denied because " + record.reason 
             email = SocialAccount.objects.filter(
                 user=record.user).first().extra_data['email']
@@ -172,7 +172,6 @@ def handle_uploaded_file(user,spreadsheet):
                 book.location = value[6]
             book.save()
         else:
-            print('3')
             book = Book.objects.create(name=value[0], image_link = value[1], summary=value[2], author=value[3], genre=value[4], isbn=value[5], location=value[6])
             book.save()
             user.profile.lib_data.books_added +=1
