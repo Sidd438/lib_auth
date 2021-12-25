@@ -21,35 +21,29 @@ def home(request):
     current_user = request.user
     if(current_user.is_anonymous):
         return redirect('/')
-    booksA = Book.objects.all()
-    books = []
+    email = SocialAccount.objects.get(user=request.user).extra_data['email']
+    if "@pilani.bits-pilani.ac.in" not in email:
+        current_user.delete()
+        return render(request, 'error.html')
+    booksA = Book.objects.filter()
     books2 = []
-    for book in booksA:
-        books.append(book)
     if(request.POST.get("search")):
         search_query = request.POST.get("search")
         search_query = search_query.lower()
-        for book in books:
+        for book in booksA:
             if(search_query in book.name.lower() or search_query in book.author.lower()):
                 books2.append(book)
         context = {'books': books2}
         return render(request, 'search.html', context)
-    try:
-        issuedsA = Issue.objects.filter(user=current_user, issued=True)
-    except:
-        issuedsA = []
-    try:
-        deniedsA = Issue.objects.filter(user=current_user, denied=True)
-        if(len(deniedsA) > 4):
-            deniedsA = deniedsA[0:4]
-    except:
-        deniedsA = []
-    if(len(books) > 3):
-        new_books = books[-3:]
+    issuedsA = Issue.objects.filter(user=current_user, issued=True)
+    deniedsA = Issue.objects.filter(user=current_user, denied=True)
+    if(len(deniedsA) > 4):
+        deniedsA = deniedsA[0:4]
+    if(len(booksA) > 3):
+        new_books = booksA[-3:]
     else:
-        new_books = books
-    trending = books
-    trending.sort(key=lambda x: x.issues, reverse=True)
+        new_books = booksA
+    trending = Book.objects.all().order_by('-issues')
     trending = trending[0:3]
     context = {'books': booksA, 'issueds': issuedsA,
                'd': deniedsA, 'new': new_books, 'trending':trending}
