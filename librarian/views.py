@@ -1,9 +1,8 @@
 from django.shortcuts import render, redirect
-from lib_app.models import Issue, Book, Renew, Spreadsheet
+from lib_app.models import Issue, Book, Renew
 from lib_app.forms import UploadFileForm
 from django.contrib.auth import authenticate, login, logout
 from datetime import datetime, timedelta
-from django.core.mail import send_mail
 from lib_auth.settings import EMAIL_HOST_PASSWORD, EMAIL_HOST_USER
 from librarian.forms import BookForm
 import smtplib
@@ -11,6 +10,7 @@ from django.core.files.storage import FileSystemStorage
 from openpyxl import load_workbook
 from librarian.models import Libdata
 from django.contrib import messages
+from allauth.socialaccount.models import SocialAccount
 
 
 def logoutA(request):
@@ -24,7 +24,6 @@ def logina(request):
 
 def logging(request):
     user = request.user
-    print(EMAIL_HOST_USER+EMAIL_HOST_PASSWORD)
     if(request.method == 'POST'):
         form = BookForm(request.POST)
         if(form.is_valid()):
@@ -44,8 +43,12 @@ def logging(request):
         return render(request, "error.html")
     elif(request.FILES):
         form = UploadFileForm(request.POST, request.FILES)
+        print('-1')
         if form.is_valid():
+            print('-2')
             handle_uploaded_file(request.user,request.FILES['file'])
+        else:
+            print(form._errors)
     elif(request.POST.get('time')):
         time = request.POST.get('time')
         issue_id = request.POST.get('issue_id')
@@ -64,26 +67,36 @@ def logging(request):
             book.save()
             user.profile.lib_data.books_issued += 1
             user.profile.lib_data.save()
-            print("sending")
+            msg = "Subject: Book Issued\n\n You have been Issued " + book.name + " for "+time+" day/s"
+            email = SocialAccount.objects.filter(user=record.user).first().extra_data['email']
             with smtplib.SMTP('smtp.gmail.com',587) as smtp:
                 smtp.ehlo()
                 smtp.starttls()
                 smtp.ehlo()
                 smtp.login(EMAIL_HOST_USER, EMAIL_HOST_PASSWORD)
-                msg = "Subject: Books Issued\n\n You have been Issued "+ book.name + " for "+time+" day/s"
-                smtp.sendmail(EMAIL_HOST_USER,'thefrogwhoseesall@gmail.com', msg)
+                smtp.sendmail(EMAIL_HOST_USER,email, msg)
         except:
             pass
     elif(request.POST.get('reason')):
         issue_id = request.POST.get('issue_id')
         record = Issue.objects.get(id=issue_id)
         try:
+            book = record.book
             record.pending = False
             record.denied = True
             record.reason = request.POST.get('reason')
             record.save()
+            msg = "Subject: Book Denied\n\n Your request for " + \
+                book.name + " has been denied because " + record.reason 
+            email = SocialAccount.objects.filter(
+                user=record.user).first().extra_data['email']
+            with smtplib.SMTP('smtp.gmail.com', 587) as smtp:
+                smtp.ehlo()
+                smtp.starttls()
+                smtp.ehlo()
+                smtp.login(EMAIL_HOST_USER, EMAIL_HOST_PASSWORD)
+                smtp.sendmail(EMAIL_HOST_USER, email, msg)
         except:
-            print('pop')
             pass
     elif(request.POST.get('merit')):
         issue_id = request.POST.get('issue_id')
@@ -133,15 +146,18 @@ def libInterface(request):
 
 def handle_uploaded_file(user,spreadsheet):
     fs = FileSystemStorage()
+    print('0')
     fs.save(r'spreadsheet\bookdata.xlsx', spreadsheet)
     workbook = load_workbook(filename=r"media\spreadsheet\bookdata.xlsx")
     sheet = workbook.active
     # 0name-1image_link-2summary-3author-4genre-5isbn-6location
     for value in sheet.iter_rows(min_row=1,min_col=1,max_col=7,values_only=True):
+        print('1')
         if not(value[5]):
             break
         elif(Book.objects.filter(isbn=value[5]).exists()):
             book = Book.objects.filter(isbn=value[5]).first()
+            print('2')
             if(value[0]):
                 book.name = value[0]
             if(value[1]):

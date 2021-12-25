@@ -6,7 +6,7 @@ from django.core.validators import FileExtensionValidator
 
 class UploadFileForm(forms.Form):
     file = forms.FileField(
-        validators=[FileExtensionValidator(allowed_extensions=['xlsv'])])
+        validators=[FileExtensionValidator(allowed_extensions=['xlsx'])])
 
 
 class RatingForm(forms.ModelForm):

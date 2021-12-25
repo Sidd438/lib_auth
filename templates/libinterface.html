@@ -134,14 +134,18 @@
 
     
     <h2 class='m-3' style="text-align: center;">All Book</h2>
+    <div style="display: flex;">
     {% for book in books %}
         <div class="card m-3" style="width: 18rem; background-color: steelblue">
           <img src="{{book.image_link}}" class="card-img-top" alt="..." />
           <div class="card-body">
             <h5 class="card-title">{{book.name}}</h5>
+            <h6 class="card-title"> By {{book.author}}</h6>
+            <h6 class="card-title">ISBN->{{book.isbn}}</h6>
           </div>
         </div>
-      {% endfor %}
+    {% endfor %}
+      </div>
     <!-- Optional JavaScript; choose one of the two! -->
 
     <!-- Option 1: Bootstrap Bundle with Popper -->
