@@ -177,8 +177,8 @@ def handle_uploaded_file(user,spreadsheet):
             book.save()
             user.profile.lib_data.books_added +=1
             user.profile.lib_data.save()
-            import shutil
-            shutil.rmtree(r"media\spreadsheet")
+        import shutil
+        shutil.rmtree(r"media\spreadsheet")
 
 def profile(request):
     current_user = request.user
