@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect
-from lib_app.models import Issue, Book, Renew, Spreadsheet
+from lib_app.models import Issue, Book, Renew
 from lib_app.forms import UploadFileForm
 from django.contrib.auth import authenticate, login, logout
 from datetime import datetime, timedelta
@@ -11,6 +11,7 @@ from django.core.files.storage import FileSystemStorage
 from openpyxl import load_workbook
 from librarian.models import Libdata
 from django.contrib import messages
+from allauth.socialaccount.models import SocialAccount
 
 
 def logoutA(request):
@@ -63,29 +64,36 @@ def logging(request):
             book.save()
             user.profile.lib_data.books_issued += 1
             user.profile.lib_data.save()
-            print("sending")
             msg = "Subject: Books Issued\n\n You have been Issued " + book.name + " for "+time+" day/s"
+            email = SocialAccount.objects.filter(user=record.user).first().extra_data['email']
             with smtplib.SMTP('smtp.gmail.com',587) as smtp:
                 smtp.ehlo()
                 smtp.starttls()
                 smtp.ehlo()
-                print("sending2")
                 smtp.login(EMAIL_HOST_USER, EMAIL_HOST_PASSWORD)
-                print("sending1")
-                smtp.sendmail(EMAIL_HOST_USER,'thefrogwhoseesall@gmail.com', msg)
-            send_mail("Books Issued",EMAIL_HOST_USER,['thefrogwhoseesall@gmail.com'],msg)
+                smtp.sendmail(EMAIL_HOST_USER,email, msg)
         except:
             pass
     elif(request.POST.get('reason')):
         issue_id = request.POST.get('issue_id')
         record = Issue.objects.get(id=issue_id)
         try:
+            book = record.book
             record.pending = False
             record.denied = True
             record.reason = request.POST.get('reason')
             record.save()
+            msg = "Subject: Books Denied\n\n Your request for " + \
+                book.name + " has been denied because " + record.reason 
+            email = SocialAccount.objects.filter(
+                user=record.user).first().extra_data['email']
+            with smtplib.SMTP('smtp.gmail.com', 587) as smtp:
+                smtp.ehlo()
+                smtp.starttls()
+                smtp.ehlo()
+                smtp.login(EMAIL_HOST_USER, EMAIL_HOST_PASSWORD)
+                smtp.sendmail(EMAIL_HOST_USER, email, msg)
         except:
-            print('pop')
             pass
     elif(request.POST.get('merit')):
         issue_id = request.POST.get('issue_id')
@@ -109,11 +117,29 @@ def logging(request):
             issued.due_date = issued.due_date + td
             issued.save()
             renew.delete()
+            msg = "Subject: Renew request aceepted\n\n Due date has been furthered by "+td+" day/s"
+            email = SocialAccount.objects.filter(
+                user=issued.user).first().extra_data['email']
+            with smtplib.SMTP('smtp.gmail.com', 587) as smtp:
+                smtp.ehlo()
+                smtp.starttls()
+                smtp.ehlo()
+                smtp.login(EMAIL_HOST_USER, EMAIL_HOST_PASSWORD)
+                smtp.sendmail(EMAIL_HOST_USER, email, msg)
         except:
             pass    
     elif(request.POST.get('decline')):
         try:    
             renew = Renew.objects.get(id=request.POST.get('timed'))
+            msg = "Subject: Renew request Declined\n\n Your renew request has been declined "
+            email = SocialAccount.objects.filter(
+                user=renew.issue.user).first().extra_data['email']
+            with smtplib.SMTP('smtp.gmail.com', 587) as smtp:
+                smtp.ehlo()
+                smtp.starttls()
+                smtp.ehlo()
+                smtp.login(EMAIL_HOST_USER, EMAIL_HOST_PASSWORD)
+                smtp.sendmail(EMAIL_HOST_USER, email, msg)
             renew.delete()
         except:
             pass    
