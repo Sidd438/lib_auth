@@ -40,7 +40,7 @@ def home(request):
     if(len(deniedsA) > 4):
         deniedsA = deniedsA[0:4]
     if(len(booksA) > 3):
-        new_books = booksA[-3:]
+        new_books = booksA.order_by('-id')[:3]
     else:
         new_books = booksA
     trending = Book.objects.all().order_by('-issues')
