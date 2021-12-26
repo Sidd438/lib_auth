@@ -43,9 +43,7 @@ def logging(request):
         return render(request, "error.html")
     elif(request.FILES):
         form = UploadFileForm(request.POST, request.FILES)
-        print('-1')
         if form.is_valid():
-            print('-2')
             handle_uploaded_file(request.user,request.FILES['file'])
         else:
             print(form._errors)
@@ -146,18 +144,15 @@ def libInterface(request):
 
 def handle_uploaded_file(user,spreadsheet):
     fs = FileSystemStorage()
-    print('0')
     fs.save(r'spreadsheet\bookdata.xlsx', spreadsheet)
     workbook = load_workbook(filename=r"media\spreadsheet\bookdata.xlsx")
     sheet = workbook.active
     # 0name-1image_link-2summary-3author-4genre-5isbn-6location
     for value in sheet.iter_rows(min_row=1,min_col=1,max_col=7,values_only=True):
-        print('1')
         if not(value[5]):
             break
         elif(Book.objects.filter(isbn=value[5]).exists()):
             book = Book.objects.filter(isbn=value[5]).first()
-            print('2')
             if(value[0]):
                 book.name = value[0]
             if(value[1]):
