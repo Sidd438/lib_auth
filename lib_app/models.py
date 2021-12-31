@@ -25,6 +25,9 @@ class Book(models.Model):
     brating = models.FloatField(default=5)
     bratings = models.IntegerField(default=0)
 
+    def __str__(self):
+        return (self.name)
+
 
 class Issue(models.Model):
     book = models.ForeignKey(Book, on_delete=models.CASCADE)
@@ -38,6 +41,8 @@ class Issue(models.Model):
     active = models.BooleanField(default=True)
     due_date = models.DateField(null=True)
 
+    def __str__(self):
+        return (self.book.name +" "+ self.user.username) 
 
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
@@ -48,6 +53,9 @@ class Profile(models.Model):
     merit = models.FloatField(default=100)
     returns = models.IntegerField(default=0)
     lib_data = models.ForeignKey(Libdata, on_delete=models.SET_NULL, null=True)
+    
+    def __str__(self):
+        return (self.user.username)
 
 @receiver(post_save, sender=User)
 def create_user_profile(sender, instance, created, **kwargs):
@@ -65,12 +73,20 @@ class Review(models.Model):
     review = models.TextField()
     date = models.DateField(auto_now_add=True)
 
+    def __str__(self):
+        return (self.book.name+self.user.username)
 
 class Rating(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
     book = models.ForeignKey(Book, on_delete=models.CASCADE, null=True)
     rating = models.PositiveIntegerField(default=1, validators=[MinValueValidator(1), MaxValueValidator(5)])
 
+    def __str__(self):
+        return (self.book.name+self.user.username)
+
 class Renew(models.Model):
     issue = models.ForeignKey(Issue, on_delete=models.CASCADE)
     time = models.IntegerField()
+
+    def __str__(self):
+        return (self.issue.book.name+self.issue.user.username)

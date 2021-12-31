@@ -169,10 +169,10 @@ def handle_uploaded_file(user,spreadsheet):
         else:
             book = Book.objects.create(name=value[0], image_link = value[1], summary=value[2], author=value[3], genre=value[4], isbn=value[5], location=value[6])
             book.save()
-            user.profile.lib_data.books_added +=1
+            user.profile.lib_data.books_added += 1
             user.profile.lib_data.save()
-        import shutil
-        shutil.rmtree(r"media\spreadsheet")
+    import shutil
+    shutil.rmtree(r"media\spreadsheet")
 
 def profile(request):
     current_user = request.user
