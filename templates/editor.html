@@ -45,52 +45,11 @@
         >
       </div>
     </nav>
-    <form method="post" action="./profile">
+    
+    <form action="" method="post">
       {% csrf_token %}
-      <div class="form-group m-3">
-        <label for="exampleInputEmail1">BITS ID</label>
-        <input
-          type="text"
-          name="bits_id"
-          class="form-control"
-          id="exampleInputEmail1"
-          aria-describedby="emailHelp"
-        />
-      </div>
-      <div class="form-group m-3">
-        <label for="exampleInputEmail1">Hostel</label>
-        <input
-          maxlength=12  
-          type="text"
-          name="hostel"
-          class="form-control"
-          id="exampleInputEmail1"
-          aria-describedby="emailHelp"
-        />
-      </div>
-      <div class="form-group m-3">
-        <label for="exampleInputEmail1">Room Number</label>
-        <input
-          type="text"
-          name="room_number"
-          class="form-control"
-          id="exampleInputEmail1"
-          aria-describedby="emailHelp"
-        />
-      </div>
-      <div class="form-group m-3">
-        <label for="exampleInputEmail1">Phone Number</label>
-        <input
-          maxlength=10
-          minlength=10
-          type="text"
-          name="phone_number"
-          class="form-control"
-          id="exampleInputEmail1"
-          aria-describedby="emailHelp"
-        />
-      </div>
-      <button type="submit" class="btn btn-primary m-5">Change</button>
+      {{ profile_form }}
+      <input class='m-3' name="edita_profile" type="submit" value="Edit Profile" />
     </form>
     <!-- Optional JavaScript; choose one of the two! -->
 

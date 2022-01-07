@@ -125,6 +125,11 @@
             </p>
             <p><input type="submit" value="Upload" /></p>
     </form>
+    {% for message in messages %}
+    <div class="alert alert-dark" role="alert">
+    {{ message }}
+    </div>
+    {% endfor %}
     <h2 class='m-3' style='text-align:center'>Add Book</h2>
     <form action='' method='post'>
       {% csrf_token %}

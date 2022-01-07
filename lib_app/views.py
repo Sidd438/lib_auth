@@ -1,11 +1,13 @@
+from django.contrib import messages
 from django.shortcuts import render
-from lib_app.models import Book, Issue, Rating, Renew, Review
+from lib_app.models import Book, Issue, Renew, Review
 from allauth.socialaccount.models import SocialAccount
 from django.contrib.auth import logout
 from django.shortcuts import redirect
 from allauth.account.admin import EmailAddress
-from .forms import RatingForm
-from django.contrib.auth import get_user_model
+
+from lib_app.utils import process_ratings
+from .forms import RatingForm, ProfileForm
 
 
 def logoutA(request):
@@ -61,21 +63,12 @@ def book_profile(request):
     if(request.POST.get('ratingd')):
         book = Book.objects.get(id=request.POST.get("ratingd"))
         ratingform = RatingForm(request.POST)
-        if ratingform.is_valid:
-            ratingform.save()
-            rating = Rating.objects.latest('id')
-            rate = rating.rating
-            rating.user = current_user
-            rating.book = book
-            rating.save()
-            book.brating = round((book.brating*book.bratings + rate)/(book.bratings+1),2)
-            book.bratings += 1
-            book.save()
+        if ratingform.is_valid: 
+            process_ratings(ratingform, book, current_user)
     elif(request.POST.get('return')):
         book = Book.objects.get(id=request.POST.get('id'))
         print(book)
-        issue = Issue.objects.get(
-            user=current_user, book=book, issued=True)
+        issue = Issue.objects.get(user=current_user, book=book, issued=True)
         issue.issued = False
         issue.returned = True
         issue.save()
@@ -86,8 +79,7 @@ def book_profile(request):
         time = request.POST.get('time')
         book = Book.objects.get(id=book_id)
         if not(Issue.objects.filter(user=current_user, book=book, active=True).exists()):
-            issue = Issue.objects.create(
-                time=time, user=current_user, book=book)
+            issue = Issue.objects.create(time=time, user=current_user, book=book)
             issue.save()
     elif(request.POST.get('review')):
         book_id = request.POST.get('book_id')
@@ -101,6 +93,8 @@ def book_profile(request):
         time = int(request.POST.get('renew'))
         ren = Renew.objects.create(issue=issue, time=time)
         ren.save()
+    else:
+        messages.add_message(request, messages.INFO, 'Welcome')
     return book_data(request)
 
 
@@ -123,22 +117,6 @@ def profile(request):
     current_user = request.user
     if(current_user.is_anonymous):
         return redirect('/')
-    if(request.POST.get('bits_id') or request.POST.get('hostel') or request.POST.get('room_number') or request.POST.get('phone_number')):
-        user = request.user
-        if(user.is_anonymous):
-            return redirect('/')
-        if(request.POST.get('bits_id')):
-            user.profile.bits_id = request.POST.get('bits_id')
-            user.save()
-        if(request.POST.get('hostel')):
-            user.profile.hostel = request.POST.get('hostel')
-            user.save()
-        if(request.POST.get('room_number')):
-            user.profile.room_no = request.POST.get('room_number')
-            user.save()
-        if(request.POST.get('phone_number')):
-            user.profile.phone_number = request.POST.get('phone_number')
-            user.save()
     issue = Issue.objects.filter(user=current_user, issued=True)
     data = SocialAccount.objects.get(user=current_user).extra_data
     data['bits_id'] = current_user.profile.bits_id
@@ -147,33 +125,41 @@ def profile(request):
     data['phone_number'] = current_user.profile.phone_number
     data['merit'] = current_user.profile.merit
     data['issueds'] = issue
-
     return render(request, 'profile.html', data)
-
 
 def editprofile(request):
     user = request.user
+    profileform = ProfileForm(initial={'bits_id':user.profile.bits_id, 'hostel':user.profile.hostel, 'room':user.profile.room_no, 'phone_number':user.profile.phone_number})
     if(user.is_anonymous):
         return redirect('/')
-    if(request.POST.get('bits_id')):
-        user.profile.bits_id = request.POST.get('bits_id')
-        user.save()
-    if(request.POST.get('hostel')):
-        user.profile.hostel = request.POST.get('hostel')
-        user.save()
-    if(request.POST.get('room_number')):
-        user.profile.room_no = request.POST.get('room_number')
-        user.save()
-    if(request.POST.get('phone_number')):
-        user.profile.phone_number = request.POST.get('phone_number')
-        user.save()
-    return render(request, 'editor.html')
+    if(request.POST.get('edita_profile')):
+        profileform = ProfileForm(request.POST)
+        if(profileform.is_valid()):
+            if(profileform.cleaned_data.get("bits_id")):
+                user.profile.bits_id = profileform.cleaned_data.get("bits_id")
+                user.save()
+            if(profileform.cleaned_data.get("hostel")):
+                user.profile.hostel = profileform.cleaned_data.get("hostel")
+                user.save()
+            if(profileform.cleaned_data.get("room")):
+                user.profile.room_no = profileform.cleaned_data.get("room")
+                user.save()            
+            if(profileform.cleaned_data.get("phone_number")):
+                user.profile.phone_number = profileform.cleaned_data.get("phone_number")
+                user.save()
+        else:
+            for x in profileform.errors:
+                if("bits_id" in x):
+                    messages.add_message(request, messages.INFO, "Invalid BITS ID")
+                if("hostel" in x):
+                    messages.add_message(request, messages.INFO, "Invalid Hostel Name")
+
+    context = {'profile_form': profileform, 'user':user}
+    return render(request, 'editor.html',context)
 
 def similar(request):
-    book_name = request.POST.get('book_name')
     id = request.POST.get('id')
     books = Book.objects.all()
-    print(book_name)
     bookM = Book.objects.get(id=id)
     similar_books = []
     for book in books:
