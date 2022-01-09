@@ -25,16 +25,13 @@ def logging(request):
         form = BookForm(request.POST)
         if(form.is_valid()):
             form.save()
-            user.profile.lib_data.books_added += 1
-            user.profile.lib_data.save()
+            user.libdata.books_added += 1
+            user.libdata.save()
     if(request.POST.get("password")):
         user = authenticate(username=request.POST.get(
             "name"), password=request.POST.get("password"))
         if(user):
             if(user.groups.filter(name="Librarians").exists()):
-                if not(user.profile.lib_data):
-                    lib_data = Libdata.objects.create()
-                    user.profile.lib_data = lib_data
                 login(request,user)
                 return libInterface(request)
         return render(request, "error.html")
@@ -60,8 +57,9 @@ def logging(request):
             book.issues += 1
             book.available = False
             book.save()
-            user.profile.lib_data.books_issued += 1
-            user.profile.lib_data.save()
+            print(user.Profile)
+            user.libdata.books_issued += 1
+            user.libdata.save()
             msg = "Subject: Book Issued\n\n You have been Issued " + book.name + " for "+time+" day/s"
             email = SocialAccount.objects.filter(user=record.user).first().extra_data['email']
             send_mail(email, msg)

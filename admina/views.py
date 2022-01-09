@@ -29,6 +29,7 @@ def logging(request):
         user = User.objects.filter(id=request.POST.get('librarian')).first()
         group = Group.objects.get(name='Librarians')
         group.user_set.add(user)
+        user.save()
     elif(request.POST.get('delete')):
         user = User.objects.filter(id=request.POST.get('delete')).first()
         group = Group.objects.get(name='Librarians')
