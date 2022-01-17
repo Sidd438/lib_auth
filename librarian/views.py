@@ -57,7 +57,7 @@ def logging(request):
             book.issues += 1
             book.available = False
             book.save()
-            print(user.Profile)
+            print("lop")
             user.libdata.books_issued += 1
             user.libdata.save()
             msg = "Subject: Book Issued\n\n You have been Issued " + book.name + " for "+time+" day/s"
@@ -89,11 +89,13 @@ def logging(request):
             pass
     elif(request.POST.get('accept')):
         try:    
+            print("lok")
             process_renew_request(request.POST.get('timed'), True)
         except:
             pass    
     elif(request.POST.get('decline')):
         try:
+            print("kok")
             process_renew_request(request.POST.get('timed'), False)
         except:
             pass    

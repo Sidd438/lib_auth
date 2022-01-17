@@ -2,9 +2,6 @@ from django.db import models
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.contrib.auth.models import User
 
-from librarian.models import Libdata
-
-
 class Spreadsheet(models.Model):
     file = models.FileField(upload_to='spreadsheets')
 
@@ -61,7 +58,7 @@ class Review(models.Model):
     date = models.DateField(auto_now_add=True)
 
     def __str__(self):
-        return (self.book.name+self.user.username)
+        return (self.book.name+" "+self.user.username)
 
 class Rating(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
@@ -69,11 +66,11 @@ class Rating(models.Model):
     rating = models.PositiveIntegerField(default=1, validators=[MinValueValidator(1), MaxValueValidator(5)])
 
     def __str__(self):
-        return (self.book.name+self.user.username)
+        return (self.book.name+" "+self.user.username)
 
 class Renew(models.Model):
     issue = models.ForeignKey(Issue, on_delete=models.CASCADE)
     time = models.IntegerField()
 
     def __str__(self):
-        return (self.issue.book.name+self.issue.user.username)
+        return (self.issue.book.name+" "+self.issue.user.username)
