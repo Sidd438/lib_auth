@@ -53,7 +53,7 @@ class Profile(models.Model):
 
 class Review(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    book = models.ForeignKey(Book, on_delete=models.CASCADE)
+    book = models.ForeignKey(Book, on_delete=models.CASCADE, related_name='reviews')
     review = models.TextField()
     date = models.DateField(auto_now_add=True)
 
@@ -66,7 +66,7 @@ class Rating(models.Model):
     rating = models.PositiveIntegerField(default=1, validators=[MinValueValidator(1), MaxValueValidator(5)])
 
     def __str__(self):
-        return (self.book.name+" "+self.user.username)
+        return (self.book.name)
 
 class Renew(models.Model):
     issue = models.ForeignKey(Issue, on_delete=models.CASCADE)

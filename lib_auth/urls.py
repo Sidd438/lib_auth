@@ -11,7 +11,8 @@ urlpatterns = [
     path('', include('lib_app.urls')),
     path('accounts/', include('allauth.urls')),
     path('', include('librarian.urls')),
-    path('admlogout',logoutA)
+    path('api/', include('api.urls')),
+    path('admlogout',logoutA),
     
 ]
 
