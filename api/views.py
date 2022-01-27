@@ -24,7 +24,7 @@ class IssueDetail(RetrieveUpdateDestroyAPIView):
     permission_classes = [LibrariansOnly]
 
     def get_object(self):
-        issue = Issue.objects.filter(id = self.kwargs['pk'])
+        issue = Issue.objects.filter(id = self.kwargs['pk']).first()
         return issue
 
 
@@ -38,7 +38,6 @@ class IssueViewSet(viewsets.ModelViewSet):
 
 
 class BookViewSet(viewsets.ModelViewSet):
-    
     queryset = Book.objects.all()
     serializer_class = BookSerializer
     permission_classes=[LibrariansOnly]
