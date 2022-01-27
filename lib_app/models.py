@@ -2,6 +2,9 @@ from django.db import models
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.contrib.auth.models import User
 
+
+
+
 class Spreadsheet(models.Model):
     file = models.FileField(upload_to='spreadsheets')
 
@@ -31,7 +34,7 @@ class Issue(models.Model):
     pending = models.BooleanField(default=True)
     issued = models.BooleanField(default=False)
     denied = models.BooleanField(default=False)
-    reason = models.TextField(null=True)
+    reason = models.TextField(null=True, blank=True)
     returned = models.BooleanField(default=False)
     active = models.BooleanField(default=True)
     due_date = models.DateField(null=True)

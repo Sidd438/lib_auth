@@ -108,7 +108,7 @@ def book_data(request):
     except:
         print('no')
         pass
-    reviews = reversed(book.review_set.all())
+    reviews = reversed(book.reviews.all())
     context = {'book': book, 'issue': issue, 'reviews':reviews, 'rating_form':ratingform}
     return render(request, 'book.html', context)
 

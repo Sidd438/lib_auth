@@ -1,16 +1,41 @@
-from django.shortcuts import render
-from .serializers import BookSerializer
-from django.http import JsonResponse
-from lib_app.models import Book
+from .serializers import BookSerializer, IssueSerializer, RegestrationSerializer
+from lib_app.models import Book, Issue
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from rest_framework.views import APIView
 from rest_framework import mixins
 from rest_framework import generics
-from rest_framework.generics import RetrieveUpdateDestroyAPIView
+from rest_framework.generics import RetrieveUpdateDestroyAPIView, ListCreateAPIView
 from rest_framework import viewsets
-from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from .permissions import LibrariansOnly
+from rest_framework.authtoken.models import Token
+from rest_framework.throttling import UserRateThrottle, AnonRateThrottle
+from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework import status
+
+class IssueList(ListCreateAPIView):
+    serializer_class = IssueSerializer
+    permission_classes = [LibrariansOnly]
+    queryset = Issue.objects.all()
+
+
+class IssueDetail(RetrieveUpdateDestroyAPIView):
+    serializer_class = IssueSerializer
+    permission_classes = [LibrariansOnly]
+
+    def get_object(self):
+        issue = Issue.objects.filter(id = self.kwargs['pk'])
+        return issue
+
+
+class IssueViewSet(viewsets.ModelViewSet):
+    queryset = Issue.objects.all()
+    serializer_class = IssueSerializer
+    permission_classes = [LibrariansOnly]
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = ['active', 'pending', 'issued', 'denied', 'returned']
+
+
 
 class BookViewSet(viewsets.ModelViewSet):
     
@@ -21,11 +46,14 @@ class BookViewSet(viewsets.ModelViewSet):
 
 
 class BookList(APIView):
+    throttle_classes = [AnonRateThrottle, UserRateThrottle]
+    
     def get(self, request):
         books = Book.objects.all()
         serializer = BookSerializer(books, many=True)
         permission_classes=[LibrariansOnly]
         return Response(serializer.data)
+    
     def post(self, request):
         serializer = BookSerializer(data=request.data)
         permission_classes = [LibrariansOnly]
@@ -36,6 +64,8 @@ class BookList(APIView):
             return Response(serializer.errors)
 
 class BookDetail(APIView):
+    throttle_classes = [AnonRateThrottle, UserRateThrottle]
+
     def get(self, request, isbn):
         book = Book.objects.get(isbn=isbn)
         serializer = BookSerializer(book, many=False)
@@ -65,6 +95,9 @@ class mixinsList(mixins.ListModelMixin,
     queryset = Book.objects.all()
     serializer_class =BookSerializer
     permission_classes = [LibrariansOnly]
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = ['author', '=available']
+
 
 
     def get(self, request, *args, **kwargs):
@@ -78,12 +111,34 @@ class MixinDetail(RetrieveUpdateDestroyAPIView):
     serializer_class = BookSerializer
     permission_classes = [LibrariansOnly]
 
+
     def get_object(self):
         isbn = int(self.kwargs["pk"])
         book = Book.objects.filter(isbn=isbn).first()
         return book
 
+class RegestrationView(APIView):
+    def post(request, data):
+        serializer = RegestrationSerializer(data=request.data)
+        if serializer.is_valid():
+            print("ok")
+            user = serializer.save()
+            return Response(serializer.data)
 
+@api_view(['POST'])
+def regestration_func(request):
+    serializer = RegestrationSerializer(data=request.data)
+    if serializer.is_valid():
+        user = serializer.save()
+        data = serializer.data
+        token = Token.objects.get_or_create(user=user).key
+        return Response(data)
+
+@api_view(['POST'])
+def logoutapi(request):
+    if request.method == "POST":
+        request.user.auth_token.delete()
+        return Response(status = status.HTTP_200_OK)
 
 """ @api_view(['GET'])
 def book_api(request):
