@@ -5,7 +5,6 @@ from allauth.socialaccount.models import SocialAccount
 from django.contrib.auth import logout
 from django.shortcuts import redirect
 from allauth.account.admin import EmailAddress
-
 from lib_app.utils import process_ratings
 from .forms import RatingForm, ProfileForm
 

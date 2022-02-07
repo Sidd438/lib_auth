@@ -9,14 +9,18 @@ from rest_framework.generics import RetrieveUpdateDestroyAPIView, ListCreateAPIV
 from rest_framework import viewsets
 from .permissions import LibrariansOnly
 from rest_framework.authtoken.models import Token
-from rest_framework.throttling import UserRateThrottle, AnonRateThrottle
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import status
 
 class IssueList(ListCreateAPIView):
     serializer_class = IssueSerializer
-    permission_classes = [LibrariansOnly]
     queryset = Issue.objects.all()
+    permission_classes = [LibrariansOnly]
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = ['active', 'pending', 'issued', 'denied', 'returned']
+
+    def post(self, request, *args, **kwargs):
+        return super().post(request, *args, **kwargs)
 
 
 class IssueDetail(RetrieveUpdateDestroyAPIView):
@@ -26,6 +30,7 @@ class IssueDetail(RetrieveUpdateDestroyAPIView):
     def get_object(self):
         issue = Issue.objects.filter(id = self.kwargs['pk']).first()
         return issue
+    
 
 
 class IssueViewSet(viewsets.ModelViewSet):
@@ -45,7 +50,6 @@ class BookViewSet(viewsets.ModelViewSet):
 
 
 class BookList(APIView):
-    throttle_classes = [AnonRateThrottle, UserRateThrottle]
     
     def get(self, request):
         books = Book.objects.all()
@@ -63,7 +67,6 @@ class BookList(APIView):
             return Response(serializer.errors)
 
 class BookDetail(APIView):
-    throttle_classes = [AnonRateThrottle, UserRateThrottle]
 
     def get(self, request, isbn):
         book = Book.objects.get(isbn=isbn)
@@ -95,7 +98,7 @@ class mixinsList(mixins.ListModelMixin,
     serializer_class =BookSerializer
     permission_classes = [LibrariansOnly]
     filter_backends = [DjangoFilterBackend]
-    filterset_fields = ['author', '=available']
+    filterset_fields = ['author', 'available']
 
 
 

@@ -18,6 +18,8 @@ urlpatterns = [
     path('issue/<int:pk>/', IssueDetail.as_view()),
     path('', include(router1.urls)),
     path('login/', obtain_auth_token, name='Token_Login'),
-    path('registration/', regestration_func, name='Token_Regestration'),
-    path('logout/', logoutapi)
+    path('registration/', regestration_func, name='Token_Registration'),
+    path('logout/', logoutapi),
+    path('api-auth/', include('rest_framework.urls')),
+
 ]

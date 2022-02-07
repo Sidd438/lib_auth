@@ -4,19 +4,17 @@ from django.contrib.auth.models import User
 
 
 
-
 class Spreadsheet(models.Model):
     file = models.FileField(upload_to='spreadsheets')
 
 
 class Book(models.Model):
-    image_link = models.TextField(
-        null=True)
+    image_link = models.TextField(null=True)
     name = models.CharField(max_length=100)
     summary = models.TextField()
     author = models.CharField(max_length=30, null=True)
     genre = models.CharField(max_length=30, null=True)
-    isbn = models.IntegerField(null=True)
+    isbn = models.IntegerField(null=True, unique=True)
     available = models.BooleanField(default=True)
     location = models.CharField(max_length=100, default= 'ask the librarian')
     issues = models.IntegerField(default=0)

@@ -42,6 +42,9 @@ class BookSerializer(serializers.ModelSerializer):
     
 
 class IssueSerializer(serializers.ModelSerializer):
+    book = serializers.CharField(source='book.name', read_only=True)
+    user = serializers.CharField(source='user.username', read_only=True)
+
     class Meta:
         model = Issue
         fields = '__all__'

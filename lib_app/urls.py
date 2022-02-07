@@ -10,4 +10,5 @@ urlpatterns = [
     path('logout', logoutA),
     path('', red),
     path('similar',similar)
+    
 ]

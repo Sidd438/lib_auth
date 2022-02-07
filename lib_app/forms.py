@@ -18,4 +18,3 @@ class ProfileForm(forms.Form):
     hostel = forms.CharField(max_length=50, validators=[RegexValidator(regex=r'^[a-zA-Z\s]+$')])
     room = forms.IntegerField(max_value=999, min_value=1)
     phone_number = forms.IntegerField(max_value=9999999999, min_value=1000000000)
-    
